@@ -1,0 +1,60 @@
+    <md-toolbar class="md-medium-small" style="position: fixed; z-index: 100">
+        <div class="md-toolbar-tools" layout="row">
+                    <span flex hide-xs></span>
+                    <span hide show-xs>     
+                        <md-button class="md-icon-button" aria-label="SideNavToggle" ng-click="toggleSideNav()" ng-hide="isOpenSideNav()">
+                          <i style="font-size: 1.6em" class="icon fa fa-bars"></i>
+                        </md-button>  
+                    </span>
+                    <span flex hide show-xs></span>
+                    <span flex="noshrink" style="width: 2.5em" hide-xs>
+                        <img src="assets/icons/Logo-white.png" alt="Yunity" style="width: 2.5em;">
+                    </span>
+                    <span ng-controller="autocompleteCtrl  as ctrl"style="width: 12em;" flex="noshrink" hide-xs>
+                            <md-content>
+                                <md-autocomplete
+                                    ng-disabled="ctrl.isDisabled"
+                                    md-no-cache="ctrl.noCache"
+                                    md-selected-item="ctrl.selectedItem"
+                                    md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+                                    md-search-text="ctrl.searchText"
+                                    md-selected-item-change="ctrl.selectedItemChange(item)"
+                                    md-items="item in ctrl.querySearch(ctrl.searchText)"
+                                    md-item-text="item.display"
+                                    md-min-length="0"
+                                    placeholder={{placeholder}}>
+                                  <md-item-template>
+                                    <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.name}}</span>
+                                  </md-item-template>
+                                  <md-not-found>
+                                    No states matching "{{ctrl.searchText}}" were found.
+                                    <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                                  </md-not-found>
+                                </md-autocomplete>
+                            </md-content>
+                    </span>
+                    <span flex></span>
+                    <span>                      
+                        <md-button href="#/chat" class="md-icon-button" aria-label="Chat">
+                          <i style="font-size: 1.6em" class="icon fa fa-comments"></i>
+                        </md-button>  
+                    </span>
+                    <span hide-xs>
+                        <md-button href="#/groups" class="md-icon-button" aria-label="Community">
+                          <i style="font-size: 1.6em" class="icon fa fa-home"></i>
+                        </md-button>                            
+                    </span>
+                    <span flex hide-xs></span>
+                    <span>
+                        <md-button href="#/profile" class="md-icon-button" aria-label="User">
+                          <i style="font-size: 1.6em" class="icon fa fa-user"></i>
+                        </md-button>  
+                    </span>
+                    <span hide-xs>
+                        <md-button href="#/login" class="md-icon-button" aria-label="Login">
+                          <i style="font-size: 1.6em" class="icon fa fa-sign-in"></i>
+                        </md-button>            
+                    </span>
+                    <span flex hide-xs></span>
+        </div>
+    </md-toolbar>

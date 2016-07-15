@@ -1,0 +1,68 @@
+@import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,300italic,400italic");
+@import url("font-awesome.min.css");
+
+
+    /******** remove link decorations ********/
+    a {
+        text-decoration: none;
+        color: #333333;
+    }
+    
+    #main a:hover :not(.iconButton){
+        text-decoration: none;
+        color: #006000;
+        text-decoration: underline;
+    }
+    
+    body > div > md-content {
+        background-color: #f7f7f7;
+        padding-bottom: 8em;
+    }
+    
+    .footerContent {
+        text-align: center;
+        background-color: white;
+    } 
+    
+    md-toolbar.md-medium-small{
+            height:48px;
+            min-height:48px;
+            max-height:48px;
+    }
+    
+    md-nav-item {
+        margin: .5em;
+    }
+    
+    md-toolbar.md-tiny{
+            height:36px;
+            min-height:36px;
+            max-height:36px;
+            padding: 0;
+    }
+    md-toolbar.md-tiny .md-toolbar-tools {
+            height:36px;
+            min-height:36px;
+            max-height:36px;
+            font-size: 15px;        
+    }
+    
+    /* Dont show darker background when sidenav is open */
+    md-backdrop.md-sidenav-backdrop{
+        position:fixed;
+        height: 100%;
+    }
+    
+    
+    .communityPickerItem {
+        border-style: solid;
+        border-radius: 5px;
+        border-color: #DDDDDD;
+        border-width: 0px;
+    }
+    
+    /* Active community in communityPicker */
+    .communityPickerItem.active {
+        border-width: 1px;
+        background-color: #F5F5F5;
+    }

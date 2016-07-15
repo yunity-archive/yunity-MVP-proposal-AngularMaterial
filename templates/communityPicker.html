@@ -1,0 +1,15 @@
+<md-content layout-padding ng-controller="communityPickerCtrl" style="padding: 0em">
+    <md-toolbar layout="row" class="md-hue-1 md-tiny">
+      <div class="md-toolbar-tools">
+        <span>Your Communities</span>
+      </div>
+    </md-toolbar>
+    <md-list flex style="padding: 8px">
+        <md-list-item class="md-2-line communityPickerItem" ng-class="{true: 'active', false: ''}[activeGroup.id == {{ item.id }}]" ng-repeat="item in groups" ng-click="setActiveGroup(item)">
+                          <i style="font-size: 2em" class="icon md-avatar fa fa-home"></i>
+          <div class="md-list-item-text">
+            <h3>{{ item.name }}</h3>
+          </div>
+        </md-list-item>
+    </md-list>
+</md-content>

@@ -1,0 +1,11 @@
+<md-sidenav class="md-sidenav-left md-whiteframe-4dp" md-component-id="left"  style="position: fixed;">
+    <md-toolbar class="md-hue-1 md-medium-small">
+      <md-button ng-click="closeSideNav()" class="md-primary">
+        <i class="fa fa-angle-left" style="margin-right: 1em;" aria-hidden="true"></i>back     
+      </md-button>
+    </md-toolbar>
+    <md-content>
+            <div ng-include='"templates/communityPicker.html"'></div>
+            <div ng-include='"templates/storePicker.html"'></div>
+    </md-content>
+</md-sidenav>

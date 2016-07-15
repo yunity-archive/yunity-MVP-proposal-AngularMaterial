@@ -1,0 +1,20 @@
+
+<div layout="row">
+    <md-content flex="100" layout-padding ng-controller="storePageCtrl">
+        <ui-view flex layout="column">
+            <h1>{{store().name}}</h1>
+            <p>{{store().description}}</p>
+        </ui-view>
+    </md-content>
+</div>
+
+
+<div layout="row">
+    <md-content flex="66" layout-padding style="margin-top: .4em;">
+            <p>Pickups</p>
+    </md-content>
+    <md-content flex="33" layout-padding style="margin-left: .4em; margin-top: .4em;">
+            <p>Members</p>
+    </md-content>
+</div>
+
