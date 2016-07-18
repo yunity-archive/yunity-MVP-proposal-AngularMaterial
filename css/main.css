@@ -1,89 +1,117 @@
 @import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,300italic,400italic");
 @import url("font-awesome.min.css");
 
-    @font-face {
-       font-family: Harabara;
-       local: Harbara;
-       src: url(../assets/fonts/Harabara.ttf);
-    }
+@font-face {
+    font-family: Harabara;
+    local: Harbara;
+    src: url(../assets/fonts/Harabara.ttf);
+}
 
 
-    /******** remove link decorations ********/
-    a {
-        text-decoration: none;
-        color: #333333;
-    }
-    
-    .sideNavPos {
-        
-      -webkit-transform:translateZ(1px);
-      -moz-transform:translateZ(1px);
-      -o-transform:translateZ(1px);
-      transform:translateZ(1px);
-    }
-    
-    /* SignUp and Login */
-    .logoAbove {
-        text-align: center;
-        margin: 4em 0 2em 0;
-        color: white;
-        font-family: Harabara;
-        letter-spacing: 0.10em;
-    }
-    
-    #main a:hover :not(.iconButton){
-        text-decoration: none;
-        color: #006000;
-        text-decoration: underline;
-    }
-    
-    body > div > md-content {
-        background-color: #f7f7f7;
-    }
-    
-    .footerContent {
-        text-align: center;
-    } 
-    
-    md-toolbar.md-medium-small{
-            height:48px;
-            min-height:48px;
-            max-height:48px;
-    }
-    
-    md-nav-item {
-        margin: .5em;
-    }
-    
-    md-toolbar.md-tiny{
-            height:36px;
-            min-height:36px;
-            max-height:36px;
-            padding: 0;
-    }
-    md-toolbar.md-tiny .md-toolbar-tools {
-            height:36px;
-            min-height:36px;
-            max-height:36px;
-            font-size: 15px;        
-    }
-    
-    /* Dont show darker background when sidenav is open */
-    md-backdrop.md-sidenav-backdrop{
-        position:fixed;
-        height: 100%;
-    }
-    
-    
-    .communityPickerItem {
-        border-style: solid;
-        border-radius: 5px;
-        border-color: #DDDDDD;
-        border-width: 0px;
-    }
-    
-    /* Active community in communityPicker */
-    .communityPickerItem.active {
-        border-width: 1px;
-        background-color: rgba(251, 175, 54, .07);
-    }
+/******** remove link decorations ********/
+a {
+    text-decoration: none;
+    color: #333333;
+}
+
+
+/* Pickup Lists */
+.pickupList-pickup {
+    border: thin solid #dddddd;
+    border-radius: 5px;
+    margin-bottom: 1em;
+    padding: 0em !important;
+}
+
+.pickupList-pickup-left {
+    padding: .4em .6em;
+}
+
+
+.pickupList-pickup-right {
+    padding: .2em .4em;
+    border-radius: 0 5px 5px 0;
+}
+
+.pickupList-person {
+    padding: .2em .5em;
+    margin-right: .4em;
+    margin-top: .4em;
+    cursor: pointer;
+    display: inline-block;
+}
+
+
+.sideNavPos {
+
+    -webkit-transform:translateZ(1px);
+    -moz-transform:translateZ(1px);
+    -o-transform:translateZ(1px);
+    transform:translateZ(1px);
+}
+
+/* SignUp and Login */
+.logoAbove {
+    text-align: center;
+    margin: 4em 0 2em 0;
+    color: white;
+    font-family: Harabara;
+    letter-spacing: 0.10em;
+}
+
+#main a:hover :not(.iconButton){
+    text-decoration: none;
+    color: #006000;
+    text-decoration: underline;
+}
+
+body > div > md-content {
+    background-color: #f7f7f7;
+}
+
+.footerContent {
+    text-align: center;
+} 
+
+md-toolbar.md-medium-small{
+    height:48px;
+    min-height:48px;
+    max-height:48px;
+}
+
+md-nav-item {
+    margin: .5em;
+}
+
+md-toolbar.md-tiny{
+    height:36px;
+    min-height:36px;
+    max-height:36px;
+    padding: 0;
+}
+md-toolbar.md-tiny .md-toolbar-tools {
+    height:36px;
+    min-height:36px;
+    max-height:36px;
+    font-size: 15px;        
+}
+
+/* Dont show darker background when sidenav is open */
+md-backdrop.md-sidenav-backdrop{
+    position:fixed;
+    height: 100%;
+}
+
+
+.communityPickerItem {
+    border-style: solid;
+    border-radius: 5px;
+    border-color: #DDDDDD;
+    border-width: 0px;
+}
+
+/* Active community in communityPicker */
+.communityPickerItem.active {
+    border-width: 1px;
+    background-color: rgba(251, 175, 54, .07);
+}

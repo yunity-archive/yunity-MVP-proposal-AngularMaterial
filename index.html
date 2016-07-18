@@ -1,57 +1,66 @@
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.0.7/angular-material.min.css">
-    <link rel="stylesheet" href="css/main.css">
-    
-    <link href="assets/images/favicon.png" type="image/png" rel="icon">
-    
-    <!-- Apple Web-App -->
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-    <link rel="apple-touch-icon" href="assets/icons/apple-homescreen-icon.png"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.0.7/angular-material.min.css">
 
-</head>
+        <link href="assets/images/favicon.png" type="image/png" rel="icon">
+
+        <!-- Apple Web-App -->
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="viewport" content="minimal-ui">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+        <link rel="apple-touch-icon" href="assets/icons/apple-homescreen-icon.png"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <link rel="stylesheet" href="css/main.css">
+        
+
+
+    </head>
     <body ng-app="yunityWebApp">
-    <div ng-controller="AppCtrl" ng-cloak>
-        <div ng-include='"templates/sideNav.html"'></div>
-        <md-content> 
-        
-        <!-- Header and mobile sidenav, not affecting content -->
-        <div ng-include='"templates/header.html"'></div>
 
-        <!-- The actuall content of the sides -->
-        <div layout="row" style="margin-top: 4em;">
-              
-                <div flex="nogrow" style="width: 20em; padding: .5em;" hide-xs>
-                  <div ng-include='"templates/communityPicker.html"'></div>
-                  <div ng-include='"templates/storePicker.html"'></div>
+
+        <div layout="column"  ng-controller="AppCtrl" ng-cloak layout-fill="layout-fill">
+            <div ng-include='"templates/sideNav.html"'></div>
+            <!-- Header and mobile sidenav, not affecting content -->
+            <div ng-include='"templates/header.html"'></div>
+            <md-content> 
+
+
+                <!-- The actuall content of the sides -->
+                <div layout="row" style="margin-top: .4em;" flex id="mainContent">
+
+                    <div flex="nogrow" style="width: 20em; padding: .5em;" hide-xs>
+                        <div ng-include='"templates/communityPicker.html"'></div>
+                        <div ng-include='"templates/storePicker.html"'></div>
+                    </div>
+
+                    <div ng-view flex="nogrow" style="width: 50em; padding: 1em;"></div>
+                    <div flex></div>
                 </div>
-        
-                <div ng-view flex="nogrow" style="width: 50em; padding: 1em;"></div>
-                <div flex></div>
-          </div>
-        </md-content>
-        <div ng-include='"templates/footer.html"'></div>
-    </div>
-        
-    
-    <script src="js/jquery.min.js"></script>
-    
-    <script src="js/angular/angular.min.js"></script>
-    <script src="js/angular/angular-route.min.js"></script>
-    <script src="js/angular/angular-animate.min.js"></script>
-    <script src="js/angular/angular-aria.min.js"></script>
-    <script src="js/angular/angular-resource.min.js"></script>
-    <script src="js/angular/angular-material.min.js"></script>
-    <script src="js/angular/angular-material-icons.min.js"></script>
-    
-    <script type="text/javascript" data-main="js/main" src="js/require.js" charset="UTF8"></script>
-    <!--<script src="js/app.js"></script>-->
+                <div ng-include='"templates/footer.html"'></div>
+            </md-content>
+        </div>
 
-</body>
+
+        <div>        
+
+        </div>
+
+
+        <script src="js/jquery.min.js"></script>
+
+        <script src="js/angular/angular.min.js"></script>
+        <script src="js/angular/angular-route.min.js"></script>
+        <script src="js/angular/angular-animate.min.js"></script>
+        <script src="js/angular/angular-aria.min.js"></script>
+        <script src="js/angular/angular-resource.min.js"></script>
+        <script src="js/angular/angular-material.min.js"></script>
+        <script src="js/angular/angular-material-icons.min.js"></script>
+
+        <script type="text/javascript" data-main="js/main" src="js/require.js" charset="UTF8"></script>
+        <!--<script src="js/app.js"></script>-->
+
+    </body>
 </html>

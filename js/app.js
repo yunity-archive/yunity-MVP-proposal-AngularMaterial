@@ -1,75 +1,172 @@
-var app = angular.module('yunityWebApp', ['oc.lazyLoad', 'ngRoute','ngMaterial', 'ngMdIcons', 'ngResource']);
+var app = angular.module('yunityWebApp', ['oc.lazyLoad', 'ngRoute', 'ngMaterial', 'ngMdIcons', 'ngResource']);
+
+app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
+        $ocLazyLoadProvider.config({
+            jsLoader: requirejs,
+            debug: true
+        });
+    }]);
 
 
-app.config(['$ocLazyLoadProvider', function($ocLazyLoadProvider) {
-    $ocLazyLoadProvider.config({
-        jsLoader: requirejs,
-        debug: true
-    });
-}]);
+
+app.directive("yPickuplist", function () {
+    return {
+        template: ''
+    };
+});
+
+app.filter("groupByDate", function ($filter) {
+    var mArr = null,
+            mGroupBy = null,
+            mRetArr = null,
+            getMemoArr = function (arr, groupBy) {
+                var ret = {};
+                angular.forEach(arr, function (item) {
+                    var groupValue = item[groupBy];
+                    groupValue = $filter('date')(groupValue, 'yyyy-MM-dd', '');
+                    if (ret[groupValue]) {
+                        ret[groupValue].push(item);
+                    } else {
+                        ret[groupValue] = [item];
+                    }
+                });
+                return ret;
+            };
+    return function (arr) {
+        groupBy = 'date';
+        var newMemoArr = getMemoArr(arr, groupBy);
+
+        if (mGroupBy !== groupBy || !angular.equals(mArr, newMemoArr)) {
+            mArr = newMemoArr;
+            mGroupBy = groupBy;
+            mRetArr = [];
+            var groups = {};
+            angular.forEach(arr, function (item) {
+                var groupValue = item[groupBy];
+                groupValue = $filter('date')(groupValue, 'yyyy-MM-dd', '');
+                if (groups[groupValue]) {
+                    groups[groupValue].items.push(item);
+                } else {
+                    groups[groupValue] = {
+                        items: [item]
+                    };
+                    groups[groupValue][groupBy] = groupValue;
+                    mRetArr.push(groups[groupValue]);
+                }
+            });
+        }
+        return mRetArr;
+    };
+});
 
 
-app.controller('AppCtrl', function($scope, $mdSidenav, $log, $rootScope, yAPI) { 
-    
-    $rootScope.closeSideNav = function () {
-      // Component lookup should always be available since we are not using `ng-if`
-      $mdSidenav('left').close()
-        .then(function () {
-          $log.debug("close RIGHT is done");
+/******* communityPicker ******/
+app.controller('storeCtrl', function ($scope, apiPickups) {
+    $scope.updatePickups = function () {
+        var pickups = apiPickups.query(function () {
+            angular.forEach(pickups, function (value, key) {
+                if (value.collector_ids.indexOf(1) !== -1) {
+                    value.isUserMember = true;
+                } else {
+                    value.isUserMember = false;
+                }
+                
+                if (value.collector_ids.length < value.max_collectors) {
+                    value.isFull = false;
+                } else {
+                    value.isFull = true;
+                }
+                
+            });
+            $scope.pickups = pickups;
         });
     };
-    
-    $scope.toggleSideNav = buildToggler('left');
-    $scope.isOpenSideNav = function(){
-      return $mdSidenav('left').isOpen();
+
+    $scope.updatePickups();
+
+    $scope.pickupList = {
+        showJoined: true,
+        showOpen: true,
+        showFull: true
+    }
+
+    $scope.reversed = true;
+    $scope.toggleReversed = function () {
+        $scope.reversed = !$scope.reversed;
     };
     
-    function buildToggler(navID) {
-      return function() {
+    $scope.filterPickups = function (pickup){
+        return true;
+    }
+});
+
+app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, yAPI) {
+
+    $rootScope.closeSideNav = function () {
         // Component lookup should always be available since we are not using `ng-if`
-        $mdSidenav(navID)
-          .toggle()
-          .then(function () {
-            $log.debug("toggle " + navID + " is done");
-          });
-      };
+        $mdSidenav('left').close()
+                .then(function () {
+                    $log.debug("close RIGHT is done");
+                });
+    };
+
+    $scope.toggleSideNav = buildToggler('left');
+    $scope.isOpenSideNav = function () {
+        return $mdSidenav('left').isOpen();
+    };
+
+    function buildToggler(navID) {
+        return function () {
+            // Component lookup should always be available since we are not using `ng-if`
+            $mdSidenav(navID)
+                    .toggle()
+                    .then(function () {
+                        $log.debug("toggle " + navID + " is done");
+                    });
+        };
     }
 });
 
 
 
 
-app.factory("apiGroups", function($resource) {
-  return $resource("/api/groups/:id");
+app.factory("apiGroups", function ($resource) {
+    return $resource("/api/groups/:id");
 });
 
-app.factory("apiStores", function($resource) {
-  return $resource("/api/stores/:id");
+app.factory("apiStores", function ($resource) {
+    return $resource("/api/stores/:id");
 });
 
 
-app.service('yAPI', function($rootScope, apiGroups, apiStores, $filter) {
+app.factory("apiPickups", function ($resource) {
+    return $resource("/api/pickup-dates/:id");
+});
+
+
+app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, $filter) {
     var yAPIdata = {
         groups: null,
         stores: null,
         users: [],
         activeGroup: {
-            getStores: function(){
-                if($rootScope.activeGroup == undefined) return;
+            getStores: function () {
+                if ($rootScope.activeGroup == undefined)
+                    return;
                 return $filter('filter')(yAPIdata.stores, {group: $rootScope.activeGroup.id}, true);
             }
         },
-        getByID: function(type, value){
+        getByID: function (type, value) {
             value = parseInt(value);
             return $filter('filter')(yAPIdata[type], {id: value}, true);
         }
     };
-    
-    yAPIdata.groups = apiGroups.query(function() {
+
+    yAPIdata.groups = apiGroups.query(function () {
         $rootScope.activeGroup = yAPIdata.groups[0];
     });
-    yAPIdata.stores = apiStores.query(function() {}); //query() returns all the entries
-    
+    yAPIdata.stores = apiStores.query(function () {}); //query() returns all the entries
+
     return yAPIdata;
 });
 
@@ -78,94 +175,99 @@ app.service('yAPI', function($rootScope, apiGroups, apiStores, $filter) {
  * Configure the Routes
  */
 app.config(['$routeProvider', function ($routeProvider) {
-  $routeProvider
-    // Home
-    .when("/", {templateUrl: "partials/home/home.html", controller: "AppCtrl"})
-    // Pages
-    .when("/login", {templateUrl: "partials/login/login.html", controller: "AppCtrl"})
-    // else 404
-    .when("/groups/:id", {templateUrl: "partials/groups/groups.html", controller: "AppCtrl"})
-    .when("/stores/:id", {templateUrl: "partials/stores/stores.html", controller: "AppCtrl"});
-    
-    /*.otherwise("/404", {templateUrl: "partials/404/404.html", controller: "AppCtrl"});*/
-}]);
+        $routeProvider
+                // Home
+                .when("/", {templateUrl: "partials/home/home.html", controller: "AppCtrl"})
+                // Pages
+                .when("/login", {templateUrl: "partials/login/login.html", controller: "AppCtrl"})
+                // else 404
+                .when("/groups/:id", {templateUrl: "partials/groups/groups.html", controller: "AppCtrl"})
+                .when("/stores/:id", {templateUrl: "partials/stores/stores.html", controller: "AppCtrl"});
+
+        /*.otherwise("/404", {templateUrl: "partials/404/404.html", controller: "AppCtrl"});*/
+    }]);
 
 
 
 
 /******* communityPicker ******/
-app.controller('communityPickerCtrl', function($scope, $rootScope, yAPI) {
+app.controller('communityPickerCtrl', function ($scope, $rootScope, yAPI) {
     $scope.groups = yAPI.groups;
-    
-    $scope.setActiveGroup = function(selectedGroup){
-            $rootScope.activeGroup = selectedGroup;
-            $rootScope.closeSideNav()
-            window.location.href = "#/groups/" + selectedGroup.id + "/";
+
+    $scope.setActiveGroup = function (selectedGroup) {
+        $rootScope.activeGroup = selectedGroup;
+        $rootScope.closeSideNav()
+        window.location.href = "#/groups/" + selectedGroup.id + "/";
     };
-      
-    $scope.openMenu = function($mdOpenMenu, ev) {
+
+    $scope.openMenu = function ($mdOpenMenu, ev) {
         $mdOpenMenu(ev);
     };
 });
 
 
 /******* storePicker ******/
-app.controller('storePickerCtrl', function($scope, $rootScope, yAPI) {
+app.controller('storePickerCtrl', function ($scope, $rootScope, yAPI) {
     $scope.stores = yAPI.activeGroup.getStores;
-    
-    $scope.loadStorePage = function(selectedStore){
-            $rootScope.closeSideNav();
-            window.location.href = "#/stores/" + selectedStore.id + "/";
+
+    $scope.loadStorePage = function (selectedStore) {
+        $rootScope.closeSideNav();
+        window.location.href = "#/stores/" + selectedStore.id + "/";
     };
-      
-    $scope.openMenu = function($mdOpenMenu, ev) {
+
+    $scope.openMenu = function ($mdOpenMenu, ev) {
         $mdOpenMenu(ev);
     };
 });
 
 /******* groupPageCtrl ******/
-app.controller('groupPageCtrl', function($scope, $rootScope, yAPI, $routeParams) {
-    $scope.group = function(){
+app.controller('groupPageCtrl', function ($scope, $rootScope, yAPI, $routeParams) {
+    $scope.group = function () {
         return yAPI.getByID("groups", $routeParams.id)[0];
     };
 });
 
 /******* groupPageCtrl ******/
-app.controller('storePageCtrl', function($scope, $rootScope, yAPI, $routeParams) {
-    $scope.store = function(){
+app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams) {
+    $scope.store = function () {
         return yAPI.getByID("stores", $routeParams.id)[0];
     };
 });
 
+/******* chat ******/
+app.controller('chatCtrl', function ($scope, $rootScope, yAPI) {
+    $scope.users = yAPI.groups;
+});
+
 /******* autocomlete ******/
-app.controller('autocompleteCtrl', function($scope, $rootScope, $q, yAPI) {
-    
-        var self = this;
+app.controller('autocompleteCtrl', function ($scope, $rootScope, $q, yAPI) {
+
+    var self = this;
     self.simulateQuery = false;
-    self.isDisabled    = false;
+    self.isDisabled = false;
     // list of `state` value/display objects
     self.entries = [];
-    self.querySearch   = querySearch;
+    self.querySearch = querySearch;
     self.selectedItemChange = selectedItemChange;
-    self.searchTextChange   = searchTextChange;
+    self.searchTextChange = searchTextChange;
     self.newState = newState;
     self.searchText = null;
     $scope.placeholder = "Search...";
-    
+
     loadData();
-    
-    self.clear = function(){
+
+    self.clear = function () {
         self.searchText = undefined;
     };
-    
-    function loadData(){
-        $q.all([yAPI.groups, yAPI.stores]).then(function(result){
+
+    function loadData() {
+        $q.all([yAPI.groups, yAPI.stores]).then(function (result) {
             self.entries = result[0];
         });
     }
-    
+
     function newState(state) {
-      alert("Sorry! This function is not yet implemented!");
+        alert("Sorry! This function is not yet implemented!");
     }
     // ******************************
     // Internal methods
@@ -174,44 +276,46 @@ app.controller('autocompleteCtrl', function($scope, $rootScope, $q, yAPI) {
      * Search for states... use $timeout to simulate
      * remote dataservice call.
      */
-    function querySearch (query) {
-      var results = query ? self.entries.filter( createFilterFor(query) ) : self.entries,
-          deferred;
-      if (self.simulateQuery) {
-        deferred = $q.defer();
-        $timeout(function () { deferred.resolve( results ); }, Math.random() * 1000, false);
-        return deferred.promise;
-      } else {
-        return results;
-      }
+    function querySearch(query) {
+        var results = query ? self.entries.filter(createFilterFor(query)) : self.entries,
+                deferred;
+        if (self.simulateQuery) {
+            deferred = $q.defer();
+            $timeout(function () {
+                deferred.resolve(results);
+            }, Math.random() * 1000, false);
+            return deferred.promise;
+        } else {
+            return results;
+        }
     }
     function searchTextChange(text) {
-      //$log.info('Text changed to ' + text);
+        //$log.info('Text changed to ' + text);
     }
     function selectedItemChange(item) {
-        if(item.name != undefined){
+        if (item.name != undefined) {
             $rootScope.activeGroup = item;
             //clear Input
             self.clear()
             //$scope.placeholder = item.name;
             window.location.href = "#/groups/" + item.id + "/";
-        }       
+        }
     }
-    
+
     /**
      * Create filter function for a query string
      */
     function createFilterFor(query) {
-      var lowercaseQuery = angular.lowercase(query);
-      return function filterFn(state) {
-        var lowercaseName = angular.lowercase(state.name);
-        return (lowercaseName.indexOf(lowercaseQuery) !== -1);
-      };
+        var lowercaseQuery = angular.lowercase(query);
+        return function filterFn(state) {
+            var lowercaseName = angular.lowercase(state.name);
+            return (lowercaseName.indexOf(lowercaseQuery) !== -1);
+        };
     }
 });
 
 
-app.config(function($mdThemingProvider) {
+app.config(function ($mdThemingProvider) {
     var yOrange = $mdThemingProvider.definePalette('yuniyColors', {
         '50': '363636', // yunity black
         '100': 'F5F5F5', // background grey
@@ -231,8 +335,8 @@ app.config(function($mdThemingProvider) {
         'contrastLightColors': ['50', '100', //hues which contrast should be 'dark' by default
             '200', '300', '400', '500']
     });
-  
-  $mdThemingProvider.theme('default')
-    .primaryPalette('yuniyColors')
-    .accentPalette('yuniyColors');
+
+    $mdThemingProvider.theme('default')
+            .primaryPalette('yuniyColors')
+            .accentPalette('yuniyColors');
 });
