@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.0.7/angular-material.min.css">
+        <link rel="stylesheet" href="../css/main.css">
+
+        <link href="../assets/images/favicon.png" type="image/png" rel="icon">
+
+        <!-- Apple Web-App -->
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+        <link rel="apple-touch-icon" href="../assets/icons/apple-homescreen-icon.png"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    </head>
+
+    <body ng-app="yunityWebApp">
+        <div>
+            <md-content ng-controller="AppCtrl" ng-cloak> 
+                <!-- Content Position horizontally -->
+                <div layout="row" style="background-color: #f66c41;">            
+                    <div flex></div>  
+                    <div flex           style="background-color: rgba(255, 255, 255, .1);"></div> <!-- transparent background-->
+
+                    <div flex="nogrow" style="background-color: rgba(255, 255, 255, .1); width: 30em;" layout="column">          
+                        <div flex></div>  
+                        <div ng-view></div>          
+                        <div flex></div>  
+                    </div>
+
+                    <div flex           style="background-color: rgba(255, 255, 255, .1);"></div> <!-- transparent background-->
+                    <div flex></div>
+                </div>
+                <div ng-include='"../templates/footer.html"'></div>
+            </md-content>
+        </div>
+
+
+        <script src="../js/jquery.min.js"></script>
+
+        <script src="../js/angular/angular.min.js"></script>
+        <script src="../js/angular/angular-route.min.js"></script>
+        <script src="../js/angular/angular-animate.min.js"></script>
+        <script src="../js/angular/angular-aria.min.js"></script>
+        <script src="../js/angular/angular-resource.min.js"></script>
+        <script src="../js/angular/angular-material.min.js"></script>
+
+        <script src="app.js"></script>
+
+    </body>
+</html>

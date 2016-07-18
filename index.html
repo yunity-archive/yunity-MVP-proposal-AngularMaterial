@@ -17,12 +17,12 @@
 
 </head>
     <body ng-app="yunityWebApp">
-    <div >
-        <md-content ng-controller="AppCtrl" ng-cloak> 
+    <div ng-controller="AppCtrl" ng-cloak>
+        <div ng-include='"templates/sideNav.html"'></div>
+        <md-content> 
         
         <!-- Header and mobile sidenav, not affecting content -->
         <div ng-include='"templates/header.html"'></div>
-        <div ng-include='"templates/sideNav.html"'></div>
 
         <!-- The actuall content of the sides -->
         <div layout="row" style="margin-top: 4em;">

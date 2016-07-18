@@ -1,11 +1,34 @@
 @import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,300italic,400italic");
 @import url("font-awesome.min.css");
 
+    @font-face {
+       font-family: Harabara;
+       local: Harbara;
+       src: url(../assets/fonts/Harabara.ttf);
+    }
+
 
     /******** remove link decorations ********/
     a {
         text-decoration: none;
         color: #333333;
+    }
+    
+    .sideNavPos {
+        
+      -webkit-transform:translateZ(1px);
+      -moz-transform:translateZ(1px);
+      -o-transform:translateZ(1px);
+      transform:translateZ(1px);
+    }
+    
+    /* SignUp and Login */
+    .logoAbove {
+        text-align: center;
+        margin: 4em 0 2em 0;
+        color: white;
+        font-family: Harabara;
+        letter-spacing: 0.10em;
     }
     
     #main a:hover :not(.iconButton){
@@ -16,12 +39,10 @@
     
     body > div > md-content {
         background-color: #f7f7f7;
-        padding-bottom: 8em;
     }
     
     .footerContent {
         text-align: center;
-        background-color: white;
     } 
     
     md-toolbar.md-medium-small{
@@ -64,5 +85,5 @@
     /* Active community in communityPicker */
     .communityPickerItem.active {
         border-width: 1px;
-        background-color: #F5F5F5;
+        background-color: rgba(251, 175, 54, .07);
     }
