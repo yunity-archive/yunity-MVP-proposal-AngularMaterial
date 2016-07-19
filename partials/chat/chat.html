@@ -1,0 +1,71 @@
+
+<div ng-controller="chatCtrl" style="margin-top: 1em;"  class="md-whiteframe-1dp">
+    <md-toolbar class="md-hue-2 md-whiteframe-2dp">
+        <div class="md-toolbar-tools" layout="row">
+            <span flex hide-xs></span>
+            <span hide show-xs>     
+                <md-button class="md-icon-button" aria-label="UserListToggle" ng-click="toggleUserList()" ng-hide="isOpenUserList()">
+                    <i style="font-size: 1.6em" class="icon fa fa-users"></i>
+                </md-button>  
+            </span>
+            <span flex></span>
+            <span style="max-width: 20em; color: white; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{currentUser.first_name}} {{currentUser.last_name}}</span>
+            <span flex></span>
+            <span ng-controller="autocompleteCtrl  as ctrl" style="width: 12em;" flex="noshrink" hide>
+                <md-content>
+                    <md-autocomplete
+                        ng-disabled="ctrl.isDisabled"
+                        md-no-cache="ctrl.noCache"
+                        md-selected-item="ctrl.selectedItem"
+                        md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+                        md-search-text="ctrl.searchText"
+                        md-selected-item-change="ctrl.selectedItemChange(item)"
+                        md-items="item in ctrl.querySearch(ctrl.searchText)"
+                        md-item-text="item.display"
+                        md-min-length="0"
+                        placeholder={{placeholder}}>
+                        <md-item-template>
+                            <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.name}}</span>
+                        </md-item-template>
+                        <md-not-found>
+                            No states matching "{{ctrl.searchText}}" were found.
+                            <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                        </md-not-found>
+                    </md-autocomplete>
+                </md-content>
+            </span>
+            <span flex></span>
+        </div>
+    </md-toolbar>
+
+    <md-content layout="row" flex style="min-height: 30em">        
+        <md-sidenav flex="33" class="md-sidenav-left md-whiteframe-1dp" md-is-locked-open="$mdMedia('gt-xs')" md-component-id="userList">
+            <md-list class="md-dense" flex style="max-height: 35em; overflow: auto">
+                <md-list-item href="#/chat/{{user.id}}"class="md-2-line" ng-repeat="user in users">
+                    <img src="assets/images/user.png" class="md-avatar" alt="{{user.first_name}}" hide show-gt-sm/>
+                    <div class="md-list-item-text" layout="column">
+                        <h3>{{user.first_name}}</h3>
+                        <p style="overflow: hidden; max-height: 3em; text-overflow: ellipsis;">Last message asd asda sdlkö asdalmd as ad poka sdmal dmasdm paosmd asmdaksm dpaokd</p>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </md-sidenav>
+        <div style="width: 100%">
+            <div style="height: 30em; overflow: auto">
+                <p class="chat-message received" ng-repeat="user in users">Hi! How is it going, {{user.first_name}}?</p>  
+                <p class="chat-message sent" ng-repeat="user in users">Good, Thanks! And you, {{user.first_name}}?</p>   
+            </div>
+
+            <div class="md-whiteframe-1dp" style="min-height: 5em; padding: .5em;">
+                <md-input-container class="md-block">
+                    <label>Say something!</label>
+                    <textarea ng-model="message" rows="3" md-select-on-focus></textarea>
+                </md-input-container>
+            </div>
+            <md-button class="md-primary md-hue-1 md-fab md-fab-bottom-right">
+                <i class="fa fa-paper-plane" style="font-size: 1.6em;" aria-hidden="true"></i>
+
+            </md-button>
+        </div>
+    </md-content>
+</div>

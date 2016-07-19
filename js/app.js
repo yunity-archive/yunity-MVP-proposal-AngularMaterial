@@ -96,7 +96,15 @@ app.controller('storeCtrl', function ($scope, apiPickups) {
     };
     
     $scope.filterPickups = function (pickup){
-        return true;
+        if(pickup.isUserMember){
+            return $scope.pickupList.showJoined;
+        } else {
+            if(pickup.isFull){
+                return $scope.pickupList.showFull;
+            } else {
+                return $scope.pickupList.showOpen;
+            }
+        }
     }
 });
 
@@ -144,11 +152,16 @@ app.factory("apiPickups", function ($resource) {
 });
 
 
-app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, $filter) {
+app.factory("apiUsers", function ($resource) {
+    return $resource("/api/users/:id");
+});
+
+
+app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, apiUsers, $filter) {
     var yAPIdata = {
         groups: null,
         stores: null,
-        users: [],
+        users: null,
         activeGroup: {
             getStores: function () {
                 if ($rootScope.activeGroup == undefined)
@@ -158,7 +171,7 @@ app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, $fil
         },
         getByID: function (type, value) {
             value = parseInt(value);
-            return $filter('filter')(yAPIdata[type], {id: value}, true);
+            return $filter('filter')(yAPIdata[type], {id: value}, true)[0];
         }
     };
 
@@ -166,6 +179,8 @@ app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, $fil
         $rootScope.activeGroup = yAPIdata.groups[0];
     });
     yAPIdata.stores = apiStores.query(function () {}); //query() returns all the entries
+    
+    yAPIdata.users = apiUsers.query(function () {}); //query() returns all the entries
 
     return yAPIdata;
 });
@@ -182,6 +197,7 @@ app.config(['$routeProvider', function ($routeProvider) {
                 .when("/login", {templateUrl: "partials/login/login.html", controller: "AppCtrl"})
                 // else 404
                 .when("/groups/:id", {templateUrl: "partials/groups/groups.html", controller: "AppCtrl"})
+                .when("/chat/:id", {templateUrl: "partials/chat/chat.html", controller: "AppCtrl"})
                 .when("/stores/:id", {templateUrl: "partials/stores/stores.html", controller: "AppCtrl"});
 
         /*.otherwise("/404", {templateUrl: "partials/404/404.html", controller: "AppCtrl"});*/
@@ -193,6 +209,7 @@ app.config(['$routeProvider', function ($routeProvider) {
 /******* communityPicker ******/
 app.controller('communityPickerCtrl', function ($scope, $rootScope, yAPI) {
     $scope.groups = yAPI.groups;
+    $scope.show = true;
 
     $scope.setActiveGroup = function (selectedGroup) {
         $rootScope.activeGroup = selectedGroup;
@@ -209,6 +226,7 @@ app.controller('communityPickerCtrl', function ($scope, $rootScope, yAPI) {
 /******* storePicker ******/
 app.controller('storePickerCtrl', function ($scope, $rootScope, yAPI) {
     $scope.stores = yAPI.activeGroup.getStores;
+    $scope.show = true;
 
     $scope.loadStorePage = function (selectedStore) {
         $rootScope.closeSideNav();
@@ -223,20 +241,51 @@ app.controller('storePickerCtrl', function ($scope, $rootScope, yAPI) {
 /******* groupPageCtrl ******/
 app.controller('groupPageCtrl', function ($scope, $rootScope, yAPI, $routeParams) {
     $scope.group = function () {
-        return yAPI.getByID("groups", $routeParams.id)[0];
+        return yAPI.getByID("groups", $routeParams.id);
     };
 });
 
 /******* groupPageCtrl ******/
 app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams) {
     $scope.store = function () {
-        return yAPI.getByID("stores", $routeParams.id)[0];
+        return yAPI.getByID("stores", $routeParams.id);
     };
 });
 
 /******* chat ******/
-app.controller('chatCtrl', function ($scope, $rootScope, yAPI) {
-    $scope.users = yAPI.groups;
+app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
+    $scope.users = yAPI.users;
+    $scope.currentUser = yAPI.getByID("users", $routeParams.id);
+    
+    $scope.closeUserList = function () {
+        // Component lookup should always be available since we are not using `ng-if`
+        $mdSidenav('userList').close()
+                .then(function () {
+                    $log.debug("close RIGHT is done");
+                });
+    };
+
+    $scope.toggleUserList = buildToggler('userList');
+    $scope.isOpenUserList = function () {
+        return $mdSidenav('userList').isOpen();
+    };
+
+    function buildToggler(navID) {
+        return function () {
+            // Component lookup should always be available since we are not using `ng-if`
+            $mdSidenav(navID)
+                    .toggle()
+                    .then(function () {
+                        $log.debug("toggle " + navID + " is done");
+                    });
+        };
+    }
+});
+
+
+/******* chat Header ******/
+app.controller('chatHeaderCtrl', function ($scope, $rootScope, yAPI) {
+    $scope.users = yAPI.users;
 });
 
 /******* autocomlete ******/
@@ -325,9 +374,9 @@ app.config(function ($mdThemingProvider) {
         '500': 'f66c41', // yunity Orange
         '600': '2b9ccb', // blue for Links
         '700': 'FFFF00',
-        '800': 'FF00FF',
+        '800': '3572B0', // Chat Blue
         '900': '00FFFF',
-        'A100': 'FF0000',
+        'A100': '91cb46',
         'A200': 'f66c41', // yunity Orange
         'A400': '0000FF',
         'A700': '00FF00',

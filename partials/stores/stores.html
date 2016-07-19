@@ -1,10 +1,8 @@
 
-<div layout="row">
-    <md-content layout-fill layout-padding ng-controller="storePageCtrl">
-        <ui-view flex layout="column">
-            <h1 class="md-headline">{{store().name}}</h1>
-            <p class="md-subhead">{{store().description}}</p>
-        </ui-view>
+<div layout="row" class="md-whiteframe-1dp">
+    <md-content layout-padding flex ng-controller="storePageCtrl">
+        <h1 class="md-headline">{{store().name}}</h1>
+        <p class="md-subhead">{{store().description}}</p>
     </md-content>
 </div>
 
@@ -13,39 +11,42 @@
 <div layout="row" layout-xs="column" ng-controller="storeCtrl">
 
     <!-- Pickup List -->
-    <md-content flex="66" flex-xs="100" style="margin-top: .4em; padding: 1em;">
+    <md-content flex="66" flex-xs="100" style="margin-top: .4em; padding: 1em;" class="md-whiteframe-1dp">
 
         <div>
             <!-- Menu Bar -->
-            <h3 style="display:inline" class="md-title"><i class="icon fa fa-shopping-basket" aria-hidden="true"></i> Pickups</h3>
+            <h3 style="display:inline" class="md-title"><i class="icon fa fa-shopping-basket" aria-hidden="true"></i>  Pickups</h3>
             <md-menu>
-                <md-button ng-click="$mdOpenMenu()">
-                    Filter <i class="fa fa-filter" aria-hidden="true"></i>
+                <md-button style="min-width: 10px"  ng-click="$mdOpenMenu()">
+                    <span hide-xs>Filter</span> <i class="fa fa-filter" aria-hidden="true"></i>
                 </md-button>
-                <md-menu-content>
-                    <md-menu-item>
-                        <md-button>
-                            joined
-                        </md-button>
-                        
-                    </md-menu-item>
-                    <md-menu-item>
-                        <md-button>
-                            open
-                        </md-button>
-                    </md-menu-item>
+                <md-menu-content width="4">
+                    <md-list>
+                        <md-list-item>
+                            <p>joined</p>
+                            <md-checkbox class="md-secondary" ng-model="pickupList.showJoined"></md-checkbox>
+                        </md-list-item>
+                        <md-list-item>
+                            <p>open</p>
+                            <md-checkbox class="md-secondary" ng-model="pickupList.showOpen"></md-checkbox>
+                        </md-list-item>
+                        <md-list-item>
+                            <p>full</p>
+                            <md-checkbox class="md-secondary" ng-model="pickupList.showFull"></md-checkbox>
+                        </md-list-item>
+                    </md-list>
                 </md-menu-content>
             </md-menu>
             <md-menu>
-                <md-button ng-click="toggleReversed()">
-                    Sort <i class="fa" ng-class="{ 'fa-angle-down': reversed , 'fa-angle-up': !reversed  }" aria-hidden="true"></i>
+                <md-button style="min-width: 10px" ng-click="toggleReversed()">
+                    <span hide-xs>Sort</span> <i class="fa" ng-class="{ 'fa-angle-down': reversed , 'fa-angle-up': !reversed  }" aria-hidden="true"></i>
                 </md-button>
             </md-menu>
         </div>
         <!-- Items -->
         <!--<y-pickuplist></y-pickuplist>-->
-        <md-list style="max-height: 30em; overflow: auto; padding: 0">
-            <div ng-repeat="pickupDate in pickups | filter:filterPickups |groupByDate | orderBy:'date':reversed">
+        <md-list style="overflow: auto; padding: 0">
+            <div ng-repeat="pickupDate in pickups| filter:filterPickups |groupByDate | orderBy:'date':reversed">
                 <md-subheader class="md-sticky">{{pickupDate.date| date:'EEEE, dd.MM.yyyy'}}</md-subheader>
                 <md-list-item style="padding: 0; min-height: 0;" class="md-2-line" ng-repeat="pickup in pickupDate.items| orderBy:['-date']:reversed">
                     <div style="width: 100%" class="pickupList-pickup" layout="row" layout-align="end stretch">
@@ -54,7 +55,7 @@
                                 <span style="margin-right: .5em;" class="md-title">{{pickup.date| date:'HH:mm'}}</span>
                                 <span>{{pickup.date| date:'dd.MM.yyyy'}}</span>                        
                             </span>
-                            <div style="overflow: auto; max-height: 4em;">
+                            <div style="overflow: auto; max-height: 2em;">
                                 <span class="pickuplist-person" ng-repeat="pickup in pickups">
                                     {{pickup.id}}
                                 </span>
@@ -79,8 +80,26 @@
         </md-list>
 
     </md-content>
-    <md-content flex="33" flex-xs="100" layout-padding style="margin-left: .4em; margin-top: .4em; padding: 1em;">
-        <h3 style="display:inline" class="md-title"><i class="icon fa fa-user" aria-hidden="true"></i> Members</h3>
+    <md-content class="md-whiteframe-1dp" flex="33" flex-xs="100" layout-padding style="margin-left: .4em; margin-top: .4em; padding: 1em;">
+        <h3 style="display:inline" class="md-title">
+            <i class="icon fa fa-user" aria-hidden="true"></i> Members
+        </h3>
+
+        <md-card>
+            <md-card-title>
+                <md-card-title-text>
+                    <span>Card with image</span>
+                </md-card-title-text>
+                <!--<md-card-title-media>
+                    <div class="md-media-sm card-media"></div>
+                </md-card-title-media>-->
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button class="md-icon-button" aria-label="Chat">
+                    <i style="font-size: 1.2em" class="icon fa fa-comments"></i>
+                </md-button> 
+            </md-card-actions>
+        </md-card>
     </md-content>
 </div>
 

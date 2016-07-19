@@ -1,7 +1,6 @@
 var app = angular.module('yunityWebApp', ['ngRoute','ngMaterial', 'ngResource']);
 
-app.controller('AppCtrl', function($scope, $log, $rootScope) { 
-    
+app.controller('AppCtrl', function($scope) {
 });
 
 app.factory("apiUsers", function($resource) {

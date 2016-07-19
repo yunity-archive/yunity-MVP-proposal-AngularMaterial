@@ -7,12 +7,99 @@
     src: url(../assets/fonts/Harabara.ttf);
 }
 
-
 /******** remove link decorations ********/
 a {
     text-decoration: none;
     color: #333333;
 }
+
+#mainView {
+    width: 60em;
+    padding: 1em;
+}
+
+@media screen and (max-width: 736px) {
+    #mainView {
+        padding: 0em;
+    }
+}
+
+/* Slide-In Content */
+
+.trigger {
+    cursor: pointer;    
+}
+
+.toggleContent {
+    max-height: 25em;
+    transition: 0.3s max-height ease-in-out, 0.2s padding ease-in-out;
+    overflow: hidden;
+}
+
+.toggleContent.hideDivbox {
+    max-height: 0 !important;
+    padding: 0 !important;
+}
+
+/****************** Chat *********************/
+
+.chat-message
+{
+    text-align: left;
+    line-height: 170%;
+    font-size: 0.9em;
+    position: relative;
+    padding: 0.2em;
+    padding-left: 0.6em;
+    -webkit-border-radius: 7px;
+    -moz-border-radius: 7px;
+    border-radius: 7px;
+    margin-bottom: 1em;
+    max-width: 70%;
+}
+
+.chat-message:after
+{
+    content: '';
+    position: absolute;
+    border-style: solid; 
+    top: 3px;            
+    display: block;
+    width: 0;
+    z-index: 1;       
+}
+
+
+.chat-message.received
+{
+    margin-left: 15px;
+    color: white;
+    background: #3572B0;
+}
+
+.chat-message.received:after
+{
+    border-width: 12px 12px 12px 0;
+    border-color: transparent #3572B0;
+    left: -11px;
+}
+
+.chat-message.sent
+{
+    margin-right: 15px;
+    color: white;
+    background: #205081;
+    margin-left: 20%;
+}
+
+.chat-message.sent:after
+{
+    border-width: 12px 0 12px 12px;
+    border-color: transparent #205081;
+    right: -11px;
+}    
+
+
 
 
 /* Pickup Lists */
@@ -66,7 +153,7 @@ a {
 }
 
 body > div > md-content {
-    background-color: #f7f7f7;
+    background-color: #f0f0f0;
 }
 
 .footerContent {
