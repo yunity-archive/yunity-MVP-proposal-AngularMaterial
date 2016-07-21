@@ -1,16 +1,22 @@
 <md-content layout-padding ng-controller="storePickerCtrl" style="margin-top: 1.5em; padding: 0em">
     <md-toolbar layout="row" class="md-hue-1 md-tiny">
-      <div class="md-toolbar-tools trigger" ng-click="show = !show">
-        <span flex>Stores in this Community</span>
-        <i class="fa" ng-class="{ 'fa-angle-up': show , 'fa-angle-down': !show  }" aria-hidden="true"></i>
-      </div>
+        <div class="md-toolbar-tools trigger" layout-padding>
+            <span flex ng-click="show = !show">Stores in this Community</span>
+            <a href="#/createStore" ng-click="openPanel('createStore')">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </a>
+            <span>
+                <i class="fa" ng-click="show = !show" ng-class="{ 'fa-angle-up': show , 'fa-angle-down': !show  }" aria-hidden="true"></i>
+            </span>
+
+        </div>
     </md-toolbar>
     <md-list flex style="padding: 8px" class="toggleContent" ng-class="{hideDivbox:!show}">
         <md-list-item class="md-2-line communityPickerItem" ng-repeat="item in stores()" ng-click="loadStorePage(item)">
-                          <i style="font-size: 2em" class="icon md-avatar fa fa-shopping-cart"></i>
-          <div class="md-list-item-text">
-            <h3>{{ item.name }}</h3>
-          </div>
+            <i style="font-size: 2em" class="icon md-avatar fa fa-shopping-cart"></i>
+            <div class="md-list-item-text">
+                <h3>{{ item.name}}</h3>
+            </div>
         </md-list-item>
     </md-list>
 </md-content>

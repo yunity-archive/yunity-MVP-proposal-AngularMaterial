@@ -13,6 +13,21 @@ a {
     color: #333333;
 }
 
+.md-icon-button {
+    font-size: 1.0em;
+}
+
+.dialogue-wide {
+    width: 95%;
+    max-width: 40em;
+}
+
+
+input[type="search"]{
+    background-color: #f0f0f0;
+    border: 0;
+}
+
 #mainView {
     width: 60em;
     padding: 1em;
@@ -21,6 +36,10 @@ a {
 @media screen and (max-width: 736px) {
     #mainView {
         padding: 0em;
+    }
+
+    .md-icon-button {
+        font-size: 1.0em;
     }
 }
 
@@ -160,15 +179,22 @@ body > div > md-content {
     text-align: center;
 } 
 
-md-toolbar.md-medium-small{
-    height:48px;
-    min-height:48px;
-    max-height:48px;
-}
-
 md-nav-item {
     margin: .5em;
 }
+
+md-toolbar.md-medium-small{
+    height:42px;
+    min-height:42px;
+    max-height:42px;
+}
+
+md-toolbar.md-medium-small md-autocomplete,
+md-toolbar.md-medium-small md-autocomplete-wrap,
+md-toolbar.md-medium-small md-autocomplete-wrap input {
+    height:32px;
+}
+
 
 md-toolbar.md-tiny{
     height:36px;
@@ -176,6 +202,7 @@ md-toolbar.md-tiny{
     max-height:36px;
     padding: 0;
 }
+
 md-toolbar.md-tiny .md-toolbar-tools {
     height:36px;
     min-height:36px;

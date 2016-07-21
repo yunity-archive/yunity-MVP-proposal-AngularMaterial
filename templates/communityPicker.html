@@ -1,9 +1,14 @@
 <md-content layout-padding ng-controller="communityPickerCtrl" style="padding: 0em">
     <md-toolbar layout="row" class="md-hue-1 md-tiny">
-        <div class="md-toolbar-tools trigger" ng-click="show = !show">
-            <span ng-show="show" flex>Your Communities</span>
-            <span ng-show="!show" flex>{{activeGroup.name}}</span>
-            <i class="fa" ng-class="{ 'fa-angle-up': show , 'fa-angle-down': !show  }" aria-hidden="true"></i>
+        <div class="md-toolbar-tools trigger" layout-padding>
+            <span ng-show="show" flex ng-click="show = !show">Your Communities</span>
+            <span ng-show="!show" flex ng-click="show = !show">{{activeGroup.name}}</span>
+            <a ng-click="openPanel('createGroup')">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </a>
+            <span>
+                <i class="fa" ng-click="show = !show" ng-class="{ 'fa-angle-up': show , 'fa-angle-down': !show  }" aria-hidden="true"></i>                
+            </span>
         </div>
     </md-toolbar>
     <md-list flex style="padding: 8px" class="toggleContent" ng-class="{hideDivbox:!show}">

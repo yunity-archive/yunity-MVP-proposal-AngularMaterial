@@ -8,77 +8,11 @@
 
 
 <!-- Store Contents -->
-<div layout="row" layout-xs="column" ng-controller="storeCtrl">
+<div layout="row" layout-xs="column">
 
     <!-- Pickup List -->
     <md-content flex="66" flex-xs="100" style="margin-top: .4em; padding: 1em;" class="md-whiteframe-1dp">
-
-        <div>
-            <!-- Menu Bar -->
-            <h3 style="display:inline" class="md-title"><i class="icon fa fa-shopping-basket" aria-hidden="true"></i>  Pickups</h3>
-            <md-menu>
-                <md-button style="min-width: 10px"  ng-click="$mdOpenMenu()">
-                    <span hide-xs>Filter</span> <i class="fa fa-filter" aria-hidden="true"></i>
-                </md-button>
-                <md-menu-content width="4">
-                    <md-list>
-                        <md-list-item>
-                            <p>joined</p>
-                            <md-checkbox class="md-secondary" ng-model="pickupList.showJoined"></md-checkbox>
-                        </md-list-item>
-                        <md-list-item>
-                            <p>open</p>
-                            <md-checkbox class="md-secondary" ng-model="pickupList.showOpen"></md-checkbox>
-                        </md-list-item>
-                        <md-list-item>
-                            <p>full</p>
-                            <md-checkbox class="md-secondary" ng-model="pickupList.showFull"></md-checkbox>
-                        </md-list-item>
-                    </md-list>
-                </md-menu-content>
-            </md-menu>
-            <md-menu>
-                <md-button style="min-width: 10px" ng-click="toggleReversed()">
-                    <span hide-xs>Sort</span> <i class="fa" ng-class="{ 'fa-angle-down': reversed , 'fa-angle-up': !reversed  }" aria-hidden="true"></i>
-                </md-button>
-            </md-menu>
-        </div>
-        <!-- Items -->
-        <!--<y-pickuplist></y-pickuplist>-->
-        <md-list style="overflow: auto; padding: 0">
-            <div ng-repeat="pickupDate in pickups| filter:filterPickups |groupByDate | orderBy:'date':reversed">
-                <md-subheader class="md-sticky">{{pickupDate.date| date:'EEEE, dd.MM.yyyy'}}</md-subheader>
-                <md-list-item style="padding: 0; min-height: 0;" class="md-2-line" ng-repeat="pickup in pickupDate.items| orderBy:['-date']:reversed">
-                    <div style="width: 100%" class="pickupList-pickup" layout="row" layout-align="end stretch">
-                        <div flex class="pickupList-pickup-left">
-                            <span style="margin: 1em 0; padding: .5em;">
-                                <span style="margin-right: .5em;" class="md-title">{{pickup.date| date:'HH:mm'}}</span>
-                                <span>{{pickup.date| date:'dd.MM.yyyy'}}</span>                        
-                            </span>
-                            <div style="overflow: auto; max-height: 2em;">
-                                <span class="pickuplist-person" ng-repeat="pickup in pickups">
-                                    {{pickup.id}}
-                                </span>
-                            </div>
-                        </div>
-                        <md-button style="margin: 0;" ng-show="{{pickup.isUserMember}}" class="md-accent pickupList-pickup-right">
-                            <p>Leave</p>
-                        </md-button>
-                        <md-button style="margin: 0;" ng-show="{{!pickup.isUserMember && !pickup.isFull}}" class="md-accent md-hue-3 pickupList-pickup-right">
-                            <p>Join</p>
-                        </md-button>
-                        <md-button ng-disabled="true" style="margin: 0;" ng-show="{{!pickup.isUserMember && pickup.isFull}}" class="md-accent pickupList-pickup-right">
-                            <p>Full!</p>
-                        </md-button>
-
-                    </div>
-                </md-list-item>
-            </div>
-
-
-
-        </md-list>
-
+        <y-pickup-list></y-pickup-list>
     </md-content>
     <md-content class="md-whiteframe-1dp" flex="33" flex-xs="100" layout-padding style="margin-left: .4em; margin-top: .4em; padding: 1em;">
         <h3 style="display:inline" class="md-title">

@@ -9,9 +9,9 @@ app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
 
 
 
-app.directive("yPickuplist", function () {
+app.directive("yPickupList", function () {
     return {
-        template: ''
+        templateUrl: 'directives/yPickupList/yPickupList.html'
     };
 });
 
@@ -60,9 +60,9 @@ app.filter("groupByDate", function ($filter) {
 });
 
 
-/******* communityPicker ******/
-app.controller('storeCtrl', function ($scope, apiPickups) {
-    $scope.updatePickups = function () {
+/******* storePage - Pickups ******/
+app.controller('pickupListCtrl', function ($scope, apiPickups) {
+    this.updatePickups = function () {
         var pickups = apiPickups.query(function () {
             angular.forEach(pickups, function (value, key) {
                 if (value.collector_ids.indexOf(1) !== -1) {
@@ -70,36 +70,36 @@ app.controller('storeCtrl', function ($scope, apiPickups) {
                 } else {
                     value.isUserMember = false;
                 }
-                
+
                 if (value.collector_ids.length < value.max_collectors) {
                     value.isFull = false;
                 } else {
                     value.isFull = true;
                 }
-                
+
             });
             $scope.pickups = pickups;
         });
     };
 
-    $scope.updatePickups();
+    this.updatePickups();
 
     $scope.pickupList = {
         showJoined: true,
         showOpen: true,
         showFull: true
-    }
-
-    $scope.reversed = true;
-    $scope.toggleReversed = function () {
-        $scope.reversed = !$scope.reversed;
     };
-    
-    $scope.filterPickups = function (pickup){
-        if(pickup.isUserMember){
+
+    this.reversed = true;
+    this.toggleReversed = function () {
+        this.reversed = !this.reversed;
+    };
+
+    this.filterPickups = function (pickup){
+        if (pickup.isUserMember) {
             return $scope.pickupList.showJoined;
         } else {
-            if(pickup.isFull){
+            if (pickup.isFull) {
                 return $scope.pickupList.showFull;
             } else {
                 return $scope.pickupList.showOpen;
@@ -108,7 +108,8 @@ app.controller('storeCtrl', function ($scope, apiPickups) {
     }
 });
 
-app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, yAPI) {
+app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPanel) {
+    $rootScope._mdPanel = $mdPanel;
 
     $rootScope.closeSideNav = function () {
         // Component lookup should always be available since we are not using `ng-if`
@@ -133,6 +134,30 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, yAPI) 
                     });
         };
     }
+    ;
+
+    $rootScope.openPanel = function (panelName) {
+        console.log(panelName);
+        var position = $rootScope._mdPanel.newPanelPosition()
+                .absolute()
+                .center();
+        var config = {
+            attachTo: angular.element(document.body),
+            controller: PanelDialogCtrl,
+            controllerAs: 'ctrl',
+            disableParentScroll: false,
+            templateUrl: 'dialogues/' + panelName + '/' + panelName + '.html',
+            hasBackdrop: true,
+            panelClass: 'dialogue-wide',
+            position: position,
+            trapFocus: true,
+            zIndex: 150,
+            clickOutsideToClose: true,
+            escapeToClose: true,
+            focusOnOpen: true
+        };
+        this._mdPanel.open(config);
+    };
 });
 
 
@@ -179,7 +204,7 @@ app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, apiU
         $rootScope.activeGroup = yAPIdata.groups[0];
     });
     yAPIdata.stores = apiStores.query(function () {}); //query() returns all the entries
-    
+
     yAPIdata.users = apiUsers.query(function () {}); //query() returns all the entries
 
     return yAPIdata;
@@ -198,6 +223,8 @@ app.config(['$routeProvider', function ($routeProvider) {
                 // else 404
                 .when("/groups/:id", {templateUrl: "partials/groups/groups.html", controller: "AppCtrl"})
                 .when("/chat/:id", {templateUrl: "partials/chat/chat.html", controller: "AppCtrl"})
+                .when("/createGroup", {templateUrl: "partials/groups/createGroup/createGroup.html", controller: "AppCtrl"})
+                .when("/createStore", {templateUrl: "partials/stores/createStore/createStore.html", controller: "AppCtrl"})
                 .when("/stores/:id", {templateUrl: "partials/stores/stores.html", controller: "AppCtrl"});
 
         /*.otherwise("/404", {templateUrl: "partials/404/404.html", controller: "AppCtrl"});*/
@@ -245,7 +272,7 @@ app.controller('groupPageCtrl', function ($scope, $rootScope, yAPI, $routeParams
     };
 });
 
-/******* groupPageCtrl ******/
+/******* storePageCtrl ******/
 app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams) {
     $scope.store = function () {
         return yAPI.getByID("stores", $routeParams.id);
@@ -256,7 +283,7 @@ app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams
 app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
     $scope.users = yAPI.users;
     $scope.currentUser = yAPI.getByID("users", $routeParams.id);
-    
+
     $scope.closeUserList = function () {
         // Component lookup should always be available since we are not using `ng-if`
         $mdSidenav('userList').close()
@@ -282,10 +309,9 @@ app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
     }
 });
 
-
 /******* chat Header ******/
-app.controller('chatHeaderCtrl', function ($scope, $rootScope, yAPI) {
-    $scope.users = yAPI.users;
+app.controller('chatHeaderCtrl', function ($scope, yAPI) {
+    this.users = yAPI.users;
 });
 
 /******* autocomlete ******/
@@ -389,3 +415,17 @@ app.config(function ($mdThemingProvider) {
             .primaryPalette('yuniyColors')
             .accentPalette('yuniyColors');
 });
+
+
+
+
+app.controller('PanelDialogCtrl', PanelDialogCtrl);
+
+
+function PanelDialogCtrl(mdPanelRef, $rootScope) {
+    this._mdPanelRef = mdPanelRef;
+    this.activeGroup = $rootScope.activeGroup;
+}
+PanelDialogCtrl.prototype.closeDialog = function () {
+    this._mdPanelRef && this._mdPanelRef.close()
+};

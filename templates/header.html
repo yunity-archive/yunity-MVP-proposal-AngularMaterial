@@ -2,14 +2,14 @@
     <div class="md-toolbar-tools" layout="row">
         <span flex hide-xs hide-sm></span>
         <span hide show-xs show-sm>     
-            <md-button class="md-icon-button" aria-label="SideNavToggle" ng-click="toggleSideNav()" ng-hide="isOpenSideNav()">
-                <i style="font-size: 1.6em" class="icon fa fa-bars"></i>
+            <md-button class="md-icon-button" aria-label="Open Sidenavigation" ng-click="toggleSideNav()" ng-hide="isOpenSideNav()">
+                <i class="icon fa fa-bars"></i>
             </md-button>  
         </span>
         <span flex hide show-xs show-sm></span>
         <span flex="noshrink" style="width: 2.5em" hide-xs hide-sm>
             <a href="/#/" aria-label="Yunity">
-                <img src="assets/icons/Logo-white.png" alt="Yunity" style="width: 2.5em;">                            
+                <img src="assets/icons/Logo-white.png" alt="Yunity" style="width: 2em;">                            
             </a>
         </span>
         <span ng-controller="autocompleteCtrl  as ctrl" style="width: 12em;" flex="noshrink" hide-xs>
@@ -29,46 +29,57 @@
                         <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.name}}</span>
                     </md-item-template>
                     <md-not-found>
-                        No states matching "{{ctrl.searchText}}" were found.
-                        <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                        Nothing matching "{{ctrl.searchText}}" were found.
                     </md-not-found>
                 </md-autocomplete>
             </md-content>
         </span>
         <span flex></span>
+
+
+
+        <!-- Chat -->
         <span ng-controller="chatHeaderCtrl  as ctrl">            
-            <md-menu-bar>
+            <md-menu-bar style="padding: 0">
                 <md-menu>
                     <md-button ng-click="$mdOpenMenu()" class="md-icon-button" aria-label="Chat">
-                        <i style="font-size: 1.6em" class="icon fa fa-comments"></i>
+                        <i class="fa fa-comments"></i>
                     </md-button> 
-                    <md-menu-content width="6">
-                        <md-list-item ng-href="#/chat/{{user.id}}/" class="md-2-line" ng-repeat="user in users">
-                            <img src="assets/images/user.png" class="md-avatar" alt="{{todos[0].who}}" />
-                            <div class="md-list-item-text">
-                                <h3>{{user.first_name}} {{user.last_name}}</h3>
-                                <p>Hi, wie geht's so?</p>
+                    <md-menu-content width="6" style="padding: 0">
+                        <md-toolbar class="md-hue-2 md-whiteframe-2dp md-small">
+                            <div class="md-toolbar-tools" layout="row">
+                                <input type="search" flex style="font-size: .8em; padding: .6em;" placeholder="Search..." ng-model="ctrl.searchUser"/>
                             </div>
-                        </md-list-item>              
+                        </md-toolbar>
+                        <md-list style="overflow: auto">
+                            <md-list-item ng-href="#/chat/{{user.id}}/" class="md-2-line" ng-repeat="user in ctrl.users | filter:ctrl.searchUser:strict">
+                                <img src="assets/images/user.png" class="md-avatar"/>
+                                <div class="md-list-item-text">
+                                    <h3>{{user.first_name}} {{user.last_name}}</h3>
+                                    <p>Hi, wie geht's so?</p>
+                                </div>
+                            </md-list-item>                            
+                        </md-list>             
                     </md-menu-content>
                 </md-menu>
             </md-menu-bar>
-
         </span>
+
+
         <span hide-xs>
             <md-button href="#/groups/{{activeGroup.id}}" class="md-icon-button" aria-label="Community">
-                <i style="font-size: 1.6em" class="icon fa fa-home"></i>
+                <i class="fa fa-home"></i>
             </md-button>                            
         </span>
         <span flex hide-xs></span>
         <span>
             <md-button href="#/profile" class="md-icon-button" aria-label="User">
-                <i style="font-size: 1.6em" class="icon fa fa-user"></i>
+                <i class="fa fa-user"></i>
             </md-button>  
         </span>
         <span hide-xs>
             <md-button href="/login" class="md-icon-button" aria-label="Login">
-                <i style="font-size: 1.6em" class="icon fa fa-sign-in"></i>
+                <i class="fa fa-sign-in"></i>
             </md-button>            
         </span>
         <span flex hide-xs></span>
