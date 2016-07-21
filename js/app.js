@@ -62,7 +62,10 @@ app.filter("groupByDate", function ($filter) {
 
 /******* storePage - Pickups ******/
 app.controller('pickupListCtrl', function ($scope, apiPickups) {
-    this.updatePickups = function () {
+    
+    var self = this;
+    
+    self.updatePickups = function () {
         var pickups = apiPickups.query(function () {
             angular.forEach(pickups, function (value, key) {
                 if (value.collector_ids.indexOf(1) !== -1) {
@@ -82,27 +85,28 @@ app.controller('pickupListCtrl', function ($scope, apiPickups) {
         });
     };
 
-    this.updatePickups();
+    self.updatePickups();
 
-    $scope.pickupList = {
+    self.pickupList = {
         showJoined: true,
         showOpen: true,
         showFull: true
     };
 
-    this.reversed = true;
-    this.toggleReversed = function () {
-        this.reversed = !this.reversed;
+    self.reversed = false;
+    
+    self.toggleReversed = function() {
+        self.reversed = !self.reversed;
     };
 
-    this.filterPickups = function (pickup){
+    self.filterPickups = function(pickup){
         if (pickup.isUserMember) {
-            return $scope.pickupList.showJoined;
+            return self.pickupList.showJoined;
         } else {
             if (pickup.isFull) {
-                return $scope.pickupList.showFull;
+                return self.pickupList.showFull;
             } else {
-                return $scope.pickupList.showOpen;
+                return self.pickupList.showOpen;
             }
         }
     }
@@ -137,7 +141,7 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
     ;
 
     $rootScope.openPanel = function (panelName) {
-        console.log(panelName);
+        $rootScope.closeSideNav();
         var position = $rootScope._mdPanel.newPanelPosition()
                 .absolute()
                 .center();
@@ -146,7 +150,7 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
             controller: PanelDialogCtrl,
             controllerAs: 'ctrl',
             disableParentScroll: false,
-            templateUrl: 'dialogues/' + panelName + '/' + panelName + '.html',
+            templateUrl: 'panels/' + panelName + '/' + panelName + '.html',
             hasBackdrop: true,
             panelClass: 'dialogue-wide',
             position: position,
@@ -223,8 +227,6 @@ app.config(['$routeProvider', function ($routeProvider) {
                 // else 404
                 .when("/groups/:id", {templateUrl: "partials/groups/groups.html", controller: "AppCtrl"})
                 .when("/chat/:id", {templateUrl: "partials/chat/chat.html", controller: "AppCtrl"})
-                .when("/createGroup", {templateUrl: "partials/groups/createGroup/createGroup.html", controller: "AppCtrl"})
-                .when("/createStore", {templateUrl: "partials/stores/createStore/createStore.html", controller: "AppCtrl"})
                 .when("/stores/:id", {templateUrl: "partials/stores/stores.html", controller: "AppCtrl"});
 
         /*.otherwise("/404", {templateUrl: "partials/404/404.html", controller: "AppCtrl"});*/

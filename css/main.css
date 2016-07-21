@@ -13,8 +13,21 @@ a {
     color: #333333;
 }
 
+image.round {
+    border-radius: 50%;
+}
+
 .md-icon-button {
     font-size: 1.0em;
+}
+
+.md-button.small {
+    min-width: 10px;
+    margin: 0;
+}
+
+.md-datepicker-calendar-pane {
+    z-index: 1000;
 }
 
 .dialogue-wide {
@@ -140,11 +153,11 @@ input[type="search"]{
 }
 
 .pickupList-person {
-    padding: .2em .5em;
+    padding: .2em;
     margin-right: .4em;
-    margin-top: .4em;
     cursor: pointer;
     display: inline-block;
+    vertical-align: middle;
 }
 
 
