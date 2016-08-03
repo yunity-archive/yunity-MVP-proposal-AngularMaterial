@@ -9,6 +9,12 @@
             
             <md-datepicker ng-model="myDate" md-placeholder="Enter date"></md-datepicker>
             <md-input-container class="md-block">
+                <label>Time</label>
+                <md-icon class="fa fa-clock-o fa-2x"></md-icon>
+                <input ng-model="ctrl.data.time"
+                       type="time"/>
+            </md-input-container>
+            <md-input-container class="md-block">
                 <label>Maximum No. of Collectors</label>
                 <input name="MaxNoCollectors" ng-model="ctrl.data.max_collectors"
                        type="number"/>

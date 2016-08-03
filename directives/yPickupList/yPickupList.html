@@ -2,7 +2,7 @@
     <div>
         <!-- Menu Bar -->
         <h3 style="display:inline" class="md-title"><i class="icon fa fa-shopping-basket" aria-hidden="true"></i>  Pickups</h3>
-        <md-button class="small md-primary md-hue-3" style="font-size: 1.2em;" ng-click="openPanel('createPickup')">
+        <md-button class="small md-primary md-hue-3" aria-label="Create Pickup" style="font-size: 1.2em;" ng-click="openPanel('createPickup')">
             <i class="fa fa-plus-circle" aria-hidden="true"></i>
         </md-button>
         <md-menu>
@@ -30,13 +30,13 @@
             <span hide-xs>Sort</span> <i class="fa" ng-class="{ 'fa-angle-down': pickupListCtrl.reversed , 'fa-angle-up': !pickupListCtrl.reversed  }" aria-hidden="true"></i>
         </md-button>
     </div>
+    
     <!-- Items -->
-    <!--<y-pickuplist></y-pickuplist>-->
-    <md-list style="overflow: auto; padding: 0">
-        <div ng-repeat="pickupDate in pickups| filter:pickupListCtrl.filterPickups |groupByDate | orderBy:'date':pickupListCtrl.reversed">
+    <md-content style="overflow: auto; max-height: 40em; padding: 0">
+        <section ng-repeat="pickupDate in pickups| filter:pickupListCtrl.filterPickups | groupByDate | orderBy:'date':pickupListCtrl.reversed">
             <md-subheader class="md-sticky">{{pickupDate.date| date:'EEEE, dd.MM.yyyy'}}</md-subheader>
-            <md-list-item style="padding: 0; min-height: 0;" class="md-2-line" ng-repeat="pickup in pickupDate.items| orderBy:['-date']:pickupListCtrl.reversed">
-                <div style="width: 100%" class="pickupList-pickup" layout="row" layout-align="end stretch">
+            <md-list>
+                <md-list-item style="padding: 0; min-height: 0; width: 100%" layout="row" layout-align="end stretch" class="md-2-line pickupList-pickup" ng-repeat="pickup in pickupDate.items| orderBy:['-date']:pickupListCtrl.reversed">
                     <div flex class="pickupList-pickup-left">
                         <span style="margin: 1em 0; padding: .5em;">
                             <span style="margin-right: .5em;" class="md-title">{{pickup.date| date:'HH:mm'}}</span>
@@ -58,9 +58,8 @@
                     <md-button ng-disabled="true" style="margin: 0;" ng-show="{{!pickup.isUserMember && pickup.isFull}}" class="md-accent pickupList-pickup-right">
                         <p>Full!</p>
                     </md-button>
-
-                </div>
-            </md-list-item>
-        </div>
-    </md-list>
+                </md-list-item>
+            </md-list>
+        </section>
+    </md-content>
 </div>

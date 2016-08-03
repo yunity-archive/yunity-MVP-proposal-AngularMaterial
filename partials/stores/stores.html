@@ -2,38 +2,30 @@
 <div layout="row" class="md-whiteframe-1dp">
     <md-content layout-padding flex ng-controller="storePageCtrl">
         <h1 class="md-headline">{{store().name}}</h1>
-        <p class="md-subhead">{{store().description}}</p>
-    </md-content>
-</div>
-
-
-<!-- Store Contents -->
-<div layout="row" layout-xs="column">
-
-    <!-- Pickup List -->
-    <md-content flex="66" flex-xs="100" style="margin-top: .4em; padding: 1em;" class="md-whiteframe-1dp">
-        <y-pickup-list></y-pickup-list>
-    </md-content>
-    <md-content class="md-whiteframe-1dp" flex="33" flex-xs="100" layout-padding style="margin-left: .4em; margin-top: .4em; padding: 1em;">
-        <h3 style="display:inline" class="md-title">
-            <i class="icon fa fa-user" aria-hidden="true"></i> Members
-        </h3>
-
-        <md-card>
-            <md-card-title>
-                <md-card-title-text>
-                    <span>Card with image</span>
-                </md-card-title-text>
-                <!--<md-card-title-media>
-                    <div class="md-media-sm card-media"></div>
-                </md-card-title-media>-->
-            </md-card-title>
-            <md-card-actions layout="row" layout-align="end center">
-                <md-button class="md-icon-button" aria-label="Chat">
-                    <i style="font-size: 1.2em" class="icon fa fa-comments"></i>
-                </md-button> 
-            </md-card-actions>
-        </md-card>
+        <md-tabs md-dynamic-height md-border-bottom flex>
+            <md-tab label="pickups">
+                <md-content style="padding-top: 2em;">
+                    <y-pickup-list></y-pickup-list>
+                </md-content>
+            </md-tab>
+            <md-tab label="Users">
+                <md-grid-list
+                    md-cols-xs="2" md-cols-sm="3" md-cols-md="4" md-cols-gt-md="6"
+                    md-row-height-gt-md="1:1" md-row-height="2:2"
+                    md-gutter="12px" md-gutter-gt-sm="8px" >
+                    <md-grid-tile class="yellow">
+                        <md-grid-tile-footer>
+                            <h3>Name</h3>
+                        </md-grid-tile-footer>
+                    </md-grid-tile>
+                </md-grid-list>
+            </md-tab>
+            <md-tab label="description">
+                <md-content style="padding-top: 2em;">
+                    <p class="md-subhead">{{store().description}}</p>
+                </md-content>
+            </md-tab>
+        </md-tabs>
     </md-content>
 </div>
 
