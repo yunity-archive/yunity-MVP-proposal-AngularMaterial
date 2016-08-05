@@ -1,7 +1,6 @@
-
 <div layout="row" class="md-whiteframe-1dp">
     <md-content layout-padding flex ng-controller="storePageCtrl">
-        <h1 class="md-headline">{{store().name}}</h1>
+        <h1 class="md-headline">{{store.name}}</h1>
         <md-tabs md-dynamic-height md-border-bottom flex>
             <md-tab label="pickups">
                 <md-content style="padding-top: 2em;">
@@ -22,7 +21,12 @@
             </md-tab>
             <md-tab label="description">
                 <md-content style="padding-top: 2em;">
-                    <p class="md-subhead">{{store().description}}</p>
+                    <p class="md-subhead">{{store.description}}</p>
+                </md-content>
+            </md-tab>
+            <md-tab label="map">
+                <md-content style="padding-top: 2em;">
+                    <leaflet lf-center="currentStore" markers="markers" height="480px" width="100%"></leaflet>
                 </md-content>
             </md-tab>
         </md-tabs>

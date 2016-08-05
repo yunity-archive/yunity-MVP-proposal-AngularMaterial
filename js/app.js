@@ -1,4 +1,4 @@
-var app = angular.module('yunityWebApp', ['oc.lazyLoad', 'ngRoute', 'ngMaterial', 'ngMdIcons', 'ngResource']);
+var app = angular.module('yunityWebApp', ['oc.lazyLoad', 'ngRoute', 'ngMaterial', 'ngMdIcons', 'ngResource', 'leaflet-directive']);
 
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
         $ocLazyLoadProvider.config({
@@ -62,9 +62,9 @@ app.filter("groupByDate", function ($filter) {
 
 /******* storePage - Pickups ******/
 app.controller('pickupListCtrl', function ($scope, apiPickups) {
-    
+
     var self = this;
-    
+
     self.updatePickups = function () {
         var pickups = apiPickups.query(function () {
             angular.forEach(pickups, function (value, key) {
@@ -94,12 +94,12 @@ app.controller('pickupListCtrl', function ($scope, apiPickups) {
     };
 
     self.reversed = false;
-    
-    self.toggleReversed = function() {
+
+    self.toggleReversed = function () {
         self.reversed = !self.reversed;
     };
 
-    self.filterPickups = function(pickup){
+    self.filterPickups = function (pickup) {
         if (pickup.isUserMember) {
             return self.pickupList.showJoined;
         } else {
@@ -275,10 +275,47 @@ app.controller('groupPageCtrl', function ($scope, $rootScope, yAPI, $routeParams
 });
 
 /******* storePageCtrl ******/
-app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams) {
-    $scope.store = function () {
-        return yAPI.getByID("stores", $routeParams.id);
-    };
+app.controller('storePageCtrl', function ($scope, yAPI, $routeParams, $timeout) {
+
+    function getCurrentStore() {
+        $scope.store = yAPI.getByID("stores", $routeParams.id);
+
+        console.log("getting");
+
+        console.log($scope.store);
+        if ($scope.store !== undefined) {
+            createMarker();
+        }
+    }
+    getCurrentStore();
+    $timeout(getCurrentStore, 3000);
+
+    angular.extend($scope, {
+        currentStore: {
+            lat: 49.9,
+            lng: 8.660232,
+            zoom: 12
+        }
+    });
+
+    function createMarker() {
+        angular.extend($scope, {
+            currentStore: {
+                lat: $scope.store.latitude,
+                lng: $scope.store.longitude,
+                zoom: 14
+            },
+            markers: {
+                m1: {
+                    lat: $scope.store.latitude,
+                    lng: $scope.store.longitude,
+                    message: $scope.store.name
+                }
+            }
+        });
+    }
+    ;
+
 });
 
 /******* chat ******/
