@@ -11,7 +11,7 @@
             </span>
         </div>
     </md-toolbar>
-    <md-list flex style="padding: 8px" class="toggleContent" ng-class="{hideDivbox:!show}">
+    <md-list flex style="padding: 8px; overflow: auto; max-height: 20em" class="toggleContent" ng-class="{hideDivbox:!show}">
         <md-list-item class="md-2-line communityPickerItem" ng-class="{true: 'active', false: ''}[activeGroup.id == {{ item.id}}]" ng-repeat="item in groups" ng-click="setActiveGroup(item)">
             <i style="font-size: 2em" class="icon md-avatar fa fa-home"></i>
             <div class="md-list-item-text">
