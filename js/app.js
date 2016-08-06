@@ -1,4 +1,4 @@
-var app = angular.module('yunityWebApp', ['oc.lazyLoad', 'ngRoute', 'ngMaterial', 'ngMdIcons', 'ngResource', 'leaflet-directive']);
+var app = angular.module('yunityWebApp', ['oc.lazyLoad', 'ngRoute', 'ngCookies', 'ngMaterial', 'ngMdIcons', 'ngResource', 'leaflet-directive']);
 
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
         $ocLazyLoadProvider.config({
@@ -112,8 +112,26 @@ app.controller('pickupListCtrl', function ($scope, apiPickups) {
     }
 });
 
-app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPanel) {
+app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPanel, $http, $cookies) {
+    
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
+    
     $rootScope._mdPanel = $mdPanel;
+    $rootScope.loggedInUserData = undefined;
+
+    // Update Login Status
+    $http.get('/api/auth/status').
+            success(function (data) {
+                if (data.display_name != "") {
+                    $rootScope.loggedInUserData = data;
+                } else {
+                    window.location.href = "/login/index.html";
+                }
+            });
+
+    if ($rootScope.isUserLoggedIn == false) {
+        //alert("terst");
+    }
 
     $rootScope.closeSideNav = function () {
         // Component lookup should always be available since we are not using `ng-if`
@@ -185,6 +203,10 @@ app.factory("apiUsers", function ($resource) {
     return $resource("/api/users/:id");
 });
 
+app.factory("apiAuth", function ($resource) {
+    return $resource("/api/auth/status/:id")
+});
+
 
 app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, apiUsers, $filter) {
     var yAPIdata = {
@@ -223,7 +245,6 @@ app.config(['$routeProvider', function ($routeProvider) {
                 // Home
                 .when("/", {templateUrl: "partials/home/home.html", controller: "AppCtrl"})
                 // Pages
-                .when("/login", {templateUrl: "partials/login/login.html", controller: "AppCtrl"})
                 // else 404
                 .when("/groups/:id", {templateUrl: "partials/groups/groups.html", controller: "AppCtrl"})
                 .when("/chat/:id", {templateUrl: "partials/chat/chat.html", controller: "AppCtrl"})
@@ -311,7 +332,8 @@ app.controller('storePageCtrl', function ($scope, yAPI, $routeParams, $timeout) 
                 }
             }
         });
-    };
+    }
+    ;
 });
 
 /******* profilePageCtrl ******/
@@ -320,7 +342,7 @@ app.controller('profilePageCtrl', function ($scope, yAPI, $routeParams, $timeout
     function getCurrentProfile() {
         $scope.profile = yAPI.getByID("users", $routeParams.id);
     }
-    
+
     getCurrentProfile();
     $timeout(getCurrentProfile, 1500);
 });
@@ -355,6 +377,28 @@ app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
     }
 });
 
+
+
+/******* Header ******/
+app.controller('HeaderCtrl', function ($http, $cookies) {
+    var self = this;
+    self.logoutdata = {
+        email: "",
+        password: "",
+        csrfmiddlewaretoken: $cookies.get('csrftoken')
+    }
+
+    self.logout = function () {
+        $http.post('/api/auth/logout/', self.logoutdata).then(self.logoutSuccess, self.logoutError);
+    };
+
+    self.logoutSuccess = function () {
+        window.location.href = "login/index.html";
+    };
+    self.logoutError = function (data) {
+        alert("error");
+    };
+});
 
 
 /******* chat Header ******/

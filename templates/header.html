@@ -1,4 +1,4 @@
-<md-toolbar class="md-medium-small md-whiteframe-3dp">
+<md-toolbar class="md-medium-small md-whiteframe-3dp" ng-controller="HeaderCtrl as headerCtrl">
     <div class="md-toolbar-tools" layout="row">
         <span flex hide-xs hide-sm></span>
         <span hide show-xs show-sm>     
@@ -79,8 +79,8 @@
             </md-button>
         </span>
         <span hide-xs>
-            <md-button href="/login" class="md-icon-button" aria-label="Login">
-                <i class="fa fa-fw fa-sign-in"></i>
+            <md-button class="md-icon-button" aria-label="Logout" ng-click="headerCtrl.logout()">
+                <i class="fa fa-fw fa-sign-out"></i>
             </md-button>            
         </span>
         <span flex hide-xs></span>

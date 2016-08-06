@@ -1,10 +1,33 @@
-var app = angular.module('yunityWebApp', ['ngRoute','ngMaterial', 'ngResource']);
+var app = angular.module('yunityWebApp', ['ngRoute', 'ngMaterial', 'ngResource']);
 
-app.controller('AppCtrl', function($scope) {
+app.controller('AppCtrl', function ($http) {
+    // Update Login Status
+    $http.get('/api/auth/status').
+            success(function (data) {
+                if (data.display_name != "") {
+                    window.location.href = "../index.html";
+                }
+            });
 });
 
-app.factory("apiUsers", function($resource) {
-  return $resource("/api/groups/:id");
+app.controller('LoginCtrl', function ($http) {
+    var self = this;
+
+    self.login = function () {
+        $http.post('/api/auth/', self.data).then(self.loginSuccess, self.loginError);
+    };
+
+    self.loginSuccess = function () {
+        window.location.href = "../index.html";
+    };
+    self.loginError = function () {
+        alert("error");
+    };
+
+});
+
+app.factory("apiUsers", function ($resource) {
+    return $resource("/api/groups/:id");
 });
 
 
@@ -12,13 +35,13 @@ app.factory("apiUsers", function($resource) {
  * Configure the Routes
  */
 app.config(['$routeProvider', function ($routeProvider) {
-  $routeProvider
-    .when("/", {templateUrl: "login.html", controller: "AppCtrl"})
-    .when("/signUp", {templateUrl: "signUp.html", controller: "AppCtrl"})
-}]);
+        $routeProvider
+                .when("/", {templateUrl: "login.html", controller: "AppCtrl"})
+                .when("/signUp", {templateUrl: "signUp.html", controller: "AppCtrl"})
+    }]);
 
 
-app.config(function($mdThemingProvider) {
+app.config(function ($mdThemingProvider) {
     var yOrange = $mdThemingProvider.definePalette('yuniyColors', {
         '50': '363636', // yunity black
         '100': 'F5F5F5', // background grey
@@ -38,11 +61,11 @@ app.config(function($mdThemingProvider) {
         'contrastLightColors': ['50', '100', //hues which contrast should be 'dark' by default
             '200', '300', '400', '500']
     });
-  
-  $mdThemingProvider.theme('default')
-    .primaryPalette('yuniyColors', {
-      'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
-      'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
-      'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
-    });
+
+    $mdThemingProvider.theme('default')
+            .primaryPalette('yuniyColors', {
+                'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
+                'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
+                'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
+            });
 });

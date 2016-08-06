@@ -4,13 +4,13 @@
     <img src="../assets/icons/Logo-white.png" alt="Yunity" style="width: 30%;">
     <p>imagine sharing everything</p>
 </div>
-<md-content layout-padding style="margin-bottom: 4em" class="md-whiteframe-2dp">
+<md-content layout-padding style="margin-bottom: 4em" ng-controller="LoginCtrl as ctrl" class="md-whiteframe-2dp">
     <form ng-submit='ctrl.login()'>
         <h2 style="padding: .2em;"> Login </h2>
         <md-input-container class="md-block">
             <label>Email</label>
             <input required type="email" name="Email" ng-model="ctrl.data.email"
-                   minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                   minlength="3" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
         </md-input-container>
 
         <md-input-container class="md-block">
@@ -21,7 +21,7 @@
         <md-switch class="md-primary" md-no-ink aria-label="Remember Me" ng-model="ctrl.data.rememberMe">
             Remember Me
         </md-switch>
-        <md-button href="../#" class="md-raised md-accent" type="submit">Login</md-button>
+        <md-button class="md-raised md-accent" type="submit">Login</md-button>
         <md-button href="#/signUp">Sign Up</md-button>
     </form>
 </md-content>

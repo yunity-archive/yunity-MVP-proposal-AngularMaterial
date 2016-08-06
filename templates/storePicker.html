@@ -11,7 +11,7 @@
 
         </div>
     </md-toolbar>
-    <md-list flex style="padding: 8px" class="toggleContent" ng-class="{hideDivbox:!show}">
+    <md-list flex style="padding: 8px; overflow: auto; max-height: 20em" class="toggleContent" ng-class="{hideDivbox:!show}">
         <md-list-item class="md-2-line communityPickerItem" ng-repeat="item in stores()" ng-click="loadStorePage(item)">
             <i style="font-size: 2em" class="icon md-avatar fa fa-shopping-cart"></i>
             <div class="md-list-item-text">
