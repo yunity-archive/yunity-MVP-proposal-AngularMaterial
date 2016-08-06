@@ -227,6 +227,7 @@ app.config(['$routeProvider', function ($routeProvider) {
                 // else 404
                 .when("/groups/:id", {templateUrl: "partials/groups/groups.html", controller: "AppCtrl"})
                 .when("/chat/:id", {templateUrl: "partials/chat/chat.html", controller: "AppCtrl"})
+                .when("/profile/:id", {templateUrl: "partials/profile/profile.html", controller: "AppCtrl"})
                 .when("/stores/:id", {templateUrl: "partials/stores/stores.html", controller: "AppCtrl"});
 
         /*.otherwise("/404", {templateUrl: "partials/404/404.html", controller: "AppCtrl"});*/
@@ -280,15 +281,12 @@ app.controller('storePageCtrl', function ($scope, yAPI, $routeParams, $timeout) 
     function getCurrentStore() {
         $scope.store = yAPI.getByID("stores", $routeParams.id);
 
-        console.log("getting");
-
-        console.log($scope.store);
         if ($scope.store !== undefined) {
             createMarker();
         }
     }
     getCurrentStore();
-    $timeout(getCurrentStore, 3000);
+    $timeout(getCurrentStore, 1500);
 
     angular.extend($scope, {
         currentStore: {
@@ -313,9 +311,18 @@ app.controller('storePageCtrl', function ($scope, yAPI, $routeParams, $timeout) 
                 }
             }
         });
-    }
-    ;
+    };
+});
 
+/******* profilePageCtrl ******/
+app.controller('profilePageCtrl', function ($scope, yAPI, $routeParams, $timeout) {
+
+    function getCurrentProfile() {
+        $scope.profile = yAPI.getByID("users", $routeParams.id);
+    }
+    
+    getCurrentProfile();
+    $timeout(getCurrentProfile, 1500);
 });
 
 /******* chat ******/
@@ -347,6 +354,8 @@ app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
         };
     }
 });
+
+
 
 /******* chat Header ******/
 app.controller('chatHeaderCtrl', function ($scope, yAPI) {

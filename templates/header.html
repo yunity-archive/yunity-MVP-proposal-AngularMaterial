@@ -52,7 +52,7 @@
                             </div>
                         </md-toolbar>
                         <md-list style="overflow: auto">
-                            <md-list-item ng-href="#/chat/{{user.id}}/" class="md-2-line" ng-repeat="user in ctrl.users | filter:ctrl.searchUser:strict">
+                            <md-list-item ng-href="#/chat/{{user.id}}/" class="md-2-line" ng-repeat="user in ctrl.users| filter:ctrl.searchUser:strict">
                                 <img src="assets/images/user.png" class="md-avatar"/>
                                 <div class="md-list-item-text">
                                     <h3>{{user.first_name}} {{user.last_name}}</h3>
@@ -72,10 +72,11 @@
             </md-button>                            
         </span>
         <span flex hide-xs></span>
+        
         <span>
-            <md-button href="#/profile" class="md-icon-button" aria-label="User">
+            <md-button href="#/profile/1" class="md-icon-button" aria-label="User">
                 <i class="fa fa-fw fa-user"></i>
-            </md-button>  
+            </md-button>
         </span>
         <span hide-xs>
             <md-button href="/login" class="md-icon-button" aria-label="Login">
