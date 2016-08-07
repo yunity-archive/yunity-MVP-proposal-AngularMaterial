@@ -1,0 +1,30 @@
+<div class="md-whiteframe-10dp" style="width: 100%;" ng-controller="groupPickerCtrl as groupCtrl">
+    <md-toolbar class="md-hue-1">
+        <div class="md-toolbar-tools">
+            <h2>
+                <i style="font-size: 1.5em; margin-right: 1em;" class="fa fa-home"></i>
+                Join Community
+            </h2>
+        </div>
+    </md-toolbar>
+    <md-content layout-padding>
+
+        <md-list flex style="padding: 8px; overflow: auto; max-height: 20em">
+            <md-list-item class="md-2-line" ng-repeat="group in groupCtrl.groups">
+                <i style="font-size: 2em" class="icon md-avatar fa fa-home"></i>
+                <div class="md-list-item-text">
+                    <h3>{{ group.name}}</h3>
+                </div>
+                <md-checkbox aria-label="join Group" class="md-secondary" ng-model="group.selected" ng-change="groupCtrl.changeGroupMembership(group)"></md-checkbox>
+            </md-list-item>
+        </md-list>
+
+        <md-button ng-click="ctrl.openPanel('createGroup')">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i> Create Group
+        </md-button>
+        <md-button class="md-primary" ng-click="groupCtrl.updateGroupInfo()">
+            <i class="fa fa-plus-circle" aria-hidden="true"></i> Done
+        </md-button>
+    </md-content>
+</div>
+

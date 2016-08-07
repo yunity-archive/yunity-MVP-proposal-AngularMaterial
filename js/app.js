@@ -11,11 +11,11 @@ app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
 
 app.directive("yPickupList", function () {
     return {
-        templateUrl: 'directives/yPickupList/yPickupList.html',        
+        templateUrl: 'directives/yPickupList/yPickupList.html',
         scope: {
-          showCreateButton: "@",
-          header: "@",
-          showStoreDetail: "@",
+            showCreateButton: "@",
+            header: "@",
+            showStoreDetail: "@",
         }
     };
 });
@@ -66,14 +66,14 @@ app.filter("groupByDate", function ($filter) {
 
 
 /******* storePage - Pickups ******/
-app.controller('pickupListCtrl', function ($scope, apiPickups, yPostReq) {
+app.controller('pickupListCtrl', function ($scope, apiPickups, yPostReq, $rootScope) {
 
     var self = this;
 
     self.updatePickups = function () {
         var pickups = apiPickups.query(function () {
             angular.forEach(pickups, function (value, key) {
-                if (value.collector_ids.indexOf(1) !== -1) {
+                if (value.collector_ids.indexOf($rootScope.loggedInUserData.id) !== -1) {
                     value.isUserMember = true;
                 } else {
                     value.isUserMember = false;
@@ -92,18 +92,20 @@ app.controller('pickupListCtrl', function ($scope, apiPickups, yPostReq) {
 
     self.updatePickups();
 
+    self.openPanel = $rootScope.openPanel;
+
     self.pickupList = {
         showJoined: true,
         showOpen: true,
         showFull: true
     };
-    
-    self.join = function(id){
-        yPostReq.req('api/pickup-dates/'+id+'/add/', {}, self.updatePickups(), self.updatePickups());
+
+    self.join = function (id) {
+        yPostReq.req('api/pickup-dates/' + id + '/add/', {}, self.updatePickups(), self.updatePickups());
     };
-    
-    self.leave = function(id){
-        yPostReq.req('api/pickup-dates/'+id+'/remove/', {}, self.updatePickups(), self.updatePickups());
+
+    self.leave = function (id) {
+        yPostReq.req('api/pickup-dates/' + id + '/remove/', {}, self.updatePickups(), self.updatePickups());
     };
 
     self.reversed = false;
@@ -130,10 +132,9 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
 
     $rootScope._mdPanel = $mdPanel;
-    $rootScope.loggedInUserData = undefined;
 
     // Update Login Status
-    $http.get('/api/auth/status').
+    $rootScope.loggedInUserData = $http.get('/api/auth/status').
             success(function (data) {
                 if (data.display_name != "") {
                     $rootScope.loggedInUserData = data;
@@ -141,10 +142,6 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
                     window.location.href = "/login/index.html";
                 }
             });
-
-    if ($rootScope.isUserLoggedIn == false) {
-        //alert("terst");
-    }
 
     $rootScope.closeSideNav = function () {
         // Component lookup should always be available since we are not using `ng-if`
@@ -191,7 +188,7 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
             escapeToClose: true,
             focusOnOpen: true
         };
-        this._mdPanel.open(config);
+        $rootScope._mdPanel.open(config);
     };
 });
 
@@ -223,11 +220,11 @@ app.factory("apiAuth", function ($resource) {
 app.service('yPostReq', function ($http, $cookies) {
     //var csrfmiddlewaretoken = $cookies.get('csrftoken');
     var yPostReq = {
-        req: function(path, data, success, error){
+        req: function (path, data, success, error) {
             $http.post(path, data).then(success, error);
         }
     };
-    
+
     return yPostReq;
 });
 
@@ -247,12 +244,16 @@ app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, apiU
         getByID: function (type, value) {
             value = parseInt(value);
             return $filter('filter')(yAPIdata[type], {id: value}, true)[0];
+        },
+        updateGroups: function () {
+            yAPIdata.groups = apiGroups.query(function () {
+                $rootScope.activeGroup = yAPIdata.groups[0];
+            });
         }
     };
 
-    yAPIdata.groups = apiGroups.query(function () {
-        $rootScope.activeGroup = yAPIdata.groups[0];
-    });
+    yAPIdata.updateGroups();
+
     yAPIdata.stores = apiStores.query(function () {}); //query() returns all the entries
 
     yAPIdata.users = apiUsers.query(function () {}); //query() returns all the entries
@@ -283,12 +284,18 @@ app.config(['$routeProvider', function ($routeProvider) {
 
 /******* communityPicker ******/
 app.controller('communityPickerCtrl', function ($scope, $rootScope, yAPI) {
-    $scope.groups = yAPI.groups;
-    $scope.show = true;
+    self = this;
+    self.groups = yAPI.groups;
+    self.show = false;
+
+    self.isUserMemberOfGroup = function (group) {
+        return (group.members.indexOf($rootScope.loggedInUserData.id) != -1);
+    }
 
     $scope.setActiveGroup = function (selectedGroup) {
         $rootScope.activeGroup = selectedGroup;
         $rootScope.closeSideNav()
+        self.show = false;
         window.location.href = "#/groups/" + selectedGroup.id + "/";
     };
 
@@ -316,15 +323,15 @@ app.controller('storePickerCtrl', function ($scope, $rootScope, yAPI) {
 /******* groupPageCtrl ******/
 app.controller('groupPageCtrl', function (apiUsers, apiGroups, $routeParams, $timeout) {
     self = this;
-    self.group = apiGroups.get({id:$routeParams.id}, function() {
-        if(self.group !== undefined){
-            self.group.members = self.group.members.map(self.mapUsers);   
-            console.log(self.group);         
+    self.group = apiGroups.get({id: $routeParams.id}, function () {
+        if (self.group !== undefined) {
+            self.group.members = self.group.members.map(self.mapUsers);
+            console.log(self.group);
         }
     });
-    
-    self.mapUsers = function(number){
-        return apiUsers.get({id:number}, function() {});
+
+    self.mapUsers = function (number) {
+        return apiUsers.get({id: number}, function () {});
     };
 });
 
@@ -438,6 +445,42 @@ app.controller('chatHeaderCtrl', function ($scope, yAPI) {
     this.users = yAPI.users;
 });
 
+
+app.controller('groupPickerCtrl', function ($rootScope, apiGroups, yPostReq, yAPI) {
+    self = this;
+    self.groups = apiGroups.query(function (groups) {
+        groups.forEach(function (group) {
+            if (group.members.indexOf($rootScope.loggedInUserData.id) !== -1) {
+                group.isUserMember = true;
+                group.selected = true;
+            }
+
+        });
+        self.groups = groups;
+        console.log(self.groups);
+    });
+
+    self.changeGroupMembership = function (groupToChange) {
+    };
+
+    self.updateGroupInfo = function () {
+        self.groups.forEach(function (groupToChange) {
+            if (groupToChange.isUserMember !== groupToChange.selected) {
+                if (groupToChange.selected) {
+                    yPostReq.req('api/groups/' + groupToChange.id + '/join/', {}, self.updateGroups(), self.updateGroups());
+                } else {
+                    yPostReq.req('api/groups/' + groupToChange.id + '/leave/', {}, self.updateGroups(), self.updateGroups());
+                }
+            }
+        });
+        location.reload();
+    };
+
+    self.updateGroups = function () {
+
+    };
+});
+
 /******* autocomlete ******/
 app.controller('autocompleteCtrl', function ($scope, $rootScope, $q, yAPI) {
 
@@ -547,41 +590,47 @@ app.controller('PanelDialogCtrl', PanelDialogCtrl);
 
 
 function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
-    self = this;
-    self._mdPanelRef = mdPanelRef;
-    self.activeGroup = $rootScope.activeGroup;    
-    
-    self.createGroup = function () {
-        yPostReq.req('/api/groups/', self.groupData, self.refreshPage, self.closeDialog);
+    thisDialog = this;
+    thisDialog._mdPanelRef = mdPanelRef;
+    thisDialog.activeGroup = $rootScope.activeGroup;
+
+
+    thisDialog.openPanel = function (panelName) {
+        thisDialog.closeDialog();
+        $rootScope.openPanel(panelName);
+    }
+
+    thisDialog.createGroup = function () {
+        yPostReq.req('/api/groups/', thisDialog.groupData, thisDialog.refreshPage, thisDialog.closeDialog);
     };
-    
-    self.createPickup = function () {
+
+    thisDialog.createPickup = function () {
         // get current store
         // mix date and time to datestring
-        var newDate = new Date(self.pickupData.date);
-        newDate.setHours(self.pickupData.time.getHours());
-        newDate.setMinutes(self.pickupData.time.getMinutes());      
-        
+        var newDate = new Date(thisDialog.pickupData.date);
+        newDate.setHours(thisDialog.pickupData.time.getHours());
+        newDate.setMinutes(thisDialog.pickupData.time.getMinutes());
+
         var dataToSend = {
-            max_collectors: self.pickupData.max_collectors,
+            max_collectors: thisDialog.pickupData.max_collectors,
             date: newDate,
             store: $rootScope.currentStoreId
         };
-        
-        yPostReq.req('/api/pickup-dates/', dataToSend, self.refreshPage, self.closeDialog);
+
+        yPostReq.req('/api/pickup-dates/', dataToSend, thisDialog.refreshPage, thisDialog.closeDialog);
     };
-    
-    self.createStore = function () {
-        self.storeData.group = self.activeGroup.id;
-        yPostReq.req('/api/stores/', self.storeData, self.refreshPage, self.closeDialog);
+
+    thisDialog.createStore = function () {
+        thisDialog.storeData.group = thisDialog.activeGroup.id;
+        yPostReq.req('/api/stores/', thisDialog.storeData, thisDialog.refreshPage, thisDialog.closeDialog);
     };
-    
-    self.closeDialog = function () {
-        self._mdPanelRef && self._mdPanelRef.close()
+
+    thisDialog.closeDialog = function () {
+        thisDialog._mdPanelRef && thisDialog._mdPanelRef.close()
     };
-    
-    
-    self.refreshPage = function () {
+
+
+    thisDialog.refreshPage = function () {
         location.reload();
     };
 }

@@ -1,18 +1,18 @@
-<md-content layout-padding ng-controller="communityPickerCtrl" style="padding: 0em"> <!-- ng-mouseover="show = true" ng-mouseleave="show = false" -->
+<md-content layout-padding ng-controller="communityPickerCtrl as communityCtrl" style="padding: 0em"> <!-- ng-mouseover="show = true" ng-mouseleave="show = false" -->
     <md-toolbar layout="row" class="md-hue-1 md-tiny">
         <div class="md-toolbar-tools trigger" layout-padding>
-            <span ng-show="show" flex ng-click="show = !show">Your Communities</span>
-            <span ng-show="!show" flex ng-click="show = !show">{{activeGroup.name}}</span>
-            <a ng-click="openPanel('createGroup')">
+            <span ng-show="communityCtrl.show" flex ng-click="communityCtrl.show = !communityCtrl.show">Your Communities</span>
+            <span ng-show="!communityCtrl.show" flex ng-click="communityCtrl.show = !communityCtrl.show">{{activeGroup.name}}</span>
+            <a ng-click="openPanel('groupPicker')">
                 <i class="fa fa-plus-circle" aria-hidden="true"></i>
             </a>
             <span>
-                <i class="fa" ng-click="show = !show" ng-class="{ 'fa-angle-up': show , 'fa-angle-down': !show  }" aria-hidden="true"></i>                
+                <i class="fa" ng-click="communityCtrl.show = !communityCtrl.show" ng-class="{ 'fa-angle-up': communityCtrl.show , 'fa-angle-down': !communityCtrl.show  }" aria-hidden="true"></i>                
             </span>
         </div>
     </md-toolbar>
-    <md-list flex style="padding: 8px; overflow: auto; max-height: 20em" class="toggleContent" ng-class="{hideDivbox:!show}">
-        <md-list-item class="md-2-line communityPickerItem" ng-class="{true: 'active', false: ''}[activeGroup.id == {{ item.id}}]" ng-repeat="item in groups" ng-click="setActiveGroup(item)">
+    <md-list flex style="padding: 8px; overflow: auto; max-height: 20em" class="toggleContent" ng-class="{hideDivbox:!communityCtrl.show}">
+        <md-list-item class="md-2-line communityPickerItem" ng-class="{true: 'active', false: ''}[activeGroup.id == {{ item.id}}]" ng-repeat="item in communityCtrl.groups | filter:communityCtrl.isUserMemberOfGroup" ng-click="setActiveGroup(item)">
             <i style="font-size: 2em" class="icon md-avatar fa fa-home"></i>
             <div class="md-list-item-text">
                 <h3>{{ item.name}}</h3>
