@@ -8,18 +8,36 @@
         <form ng-submit='ctrl.login()'>
             <md-input-container class="md-block">
                 <label>Name</label>
-                <input name="Name" ng-model="ctrl.data.name"
+                <input name="Name" ng-model="ctrl.storeData.name"
                        minlength="3" maxlength="100"/>
             </md-input-container>
 
             <md-input-container class="md-block">
                 <label>Description</label>
-                <textarea ng-model="ctrl.data.description" rows="5" md-select-on-focus></textarea>
+                <textarea ng-model="ctrl.storeData.description" rows="5" md-select-on-focus></textarea>
             </md-input-container>
+            
+
+            <md-input-container class="md-block">
+                <label>Adress</label>
+                <textarea ng-model="ctrl.storeData.adress" rows="5" md-select-on-focus></textarea>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Latitude</label>
+                <textarea ng-model="ctrl.storeData.latitude" rows="5" md-select-on-focus></textarea>
+            </md-input-container>
+            
+
+            <md-input-container class="md-block">
+                <label>Longitude</label>
+                <textarea ng-model="ctrl.storeData.longitude" rows="5" md-select-on-focus></textarea>
+            </md-input-container>
+            
 
             <div layout="row" layout-align="end center">
                 <md-button ng-click="ctrl.closeDialog()">Cancel</md-button>
-                <md-button ng-click="ctrl.closeDialog()" class="md-raised md-primary md-hue-3" type="submit">Create</md-button>
+                <md-button ng-click="ctrl.createStore()" class="md-raised md-primary md-hue-3" type="submit">Create</md-button>
             </div>
         </form>
     </md-content>

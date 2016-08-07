@@ -113,9 +113,9 @@ app.controller('pickupListCtrl', function ($scope, apiPickups) {
 });
 
 app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPanel, $http, $cookies) {
-    
+
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
-    
+
     $rootScope._mdPanel = $mdPanel;
     $rootScope.loggedInUserData = undefined;
 
@@ -297,7 +297,7 @@ app.controller('groupPageCtrl', function ($scope, $rootScope, yAPI, $routeParams
 });
 
 /******* storePageCtrl ******/
-app.controller('storePageCtrl', function ($scope, yAPI, $routeParams, $timeout) {
+app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams, $timeout) {
 
     function getCurrentStore() {
         $scope.store = yAPI.getByID("stores", $routeParams.id);
@@ -308,6 +308,7 @@ app.controller('storePageCtrl', function ($scope, yAPI, $routeParams, $timeout) 
     }
     getCurrentStore();
     $timeout(getCurrentStore, 1500);
+    $rootScope.currentStoreId = $routeParams.id;
 
     angular.extend($scope, {
         currentStore: {
@@ -514,10 +515,42 @@ app.config(function ($mdThemingProvider) {
 app.controller('PanelDialogCtrl', PanelDialogCtrl);
 
 
-function PanelDialogCtrl(mdPanelRef, $rootScope) {
-    this._mdPanelRef = mdPanelRef;
-    this.activeGroup = $rootScope.activeGroup;
+function PanelDialogCtrl(mdPanelRef, $rootScope, $http, $cookies) {
+    self = this;
+    self._mdPanelRef = mdPanelRef;
+    self.activeGroup = $rootScope.activeGroup;    
+    
+    self.createGroup = function () {
+        $http.post('/api/groups/', self.groupData).then(self.refreshPage, self.closeDialog);
+    };
+    
+    self.createPickup = function () {
+        // get current store
+        // mix date and time to datestring
+        var newDate = new Date(self.pickupData.date);
+        newDate.setHours(self.pickupData.time.getHours());
+        newDate.setMinutes(self.pickupData.time.getMinutes());      
+        
+        var dataToSend = {
+            max_collectors: self.pickupData.max_collectors,
+            date: newDate,
+            store: $rootScope.currentStoreId
+        };
+        
+        $http.post('/api/pickup-dates/', dataToSend).then(self.refreshPage, self.closeDialog);
+    };
+    
+    self.createStore = function () {
+        self.storeData.group = self.activeGroup.id;
+        $http.post('/api/stores/', self.storeData).then(self.refreshPage, self.closeDialog);
+    };
+    
+    self.closeDialog = function () {
+        self._mdPanelRef && self._mdPanelRef.close()
+    };
+    
+    
+    self.refreshPage = function () {
+        location.reload();
+    };
 }
-PanelDialogCtrl.prototype.closeDialog = function () {
-    this._mdPanelRef && this._mdPanelRef.close()
-};

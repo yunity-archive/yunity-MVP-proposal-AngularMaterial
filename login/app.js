@@ -1,6 +1,9 @@
-var app = angular.module('yunityWebApp', ['ngRoute', 'ngMaterial', 'ngResource']);
+var app = angular.module('yunityWebApp', ['ngRoute', 'ngMaterial', 'ngResource', 'ngCookies']);
 
-app.controller('AppCtrl', function ($http) {
+app.controller('AppCtrl', function ($http, $cookies) {
+    
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
+    
     // Update Login Status
     $http.get('/api/auth/status').
             success(function (data) {
@@ -12,7 +15,12 @@ app.controller('AppCtrl', function ($http) {
 
 app.controller('LoginCtrl', function ($http) {
     var self = this;
-
+    
+    self.signup = function () {
+        $http.post('/api/users/', self.data).then(self.loginSuccess, self.loginError);
+    };
+    
+    
     self.login = function () {
         $http.post('/api/auth/', self.data).then(self.loginSuccess, self.loginError);
     };
@@ -20,6 +28,7 @@ app.controller('LoginCtrl', function ($http) {
     self.loginSuccess = function () {
         window.location.href = "../index.html";
     };
+    
     self.loginError = function () {
         alert("error");
     };
