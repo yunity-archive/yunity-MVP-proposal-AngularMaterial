@@ -11,7 +11,12 @@ app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
 
 app.directive("yPickupList", function () {
     return {
-        templateUrl: 'directives/yPickupList/yPickupList.html'
+        templateUrl: 'directives/yPickupList/yPickupList.html',        
+        scope: {
+          showCreateButton: "@",
+          header: "@",
+          showStoreDetail: "@",
+        }
     };
 });
 
@@ -61,7 +66,7 @@ app.filter("groupByDate", function ($filter) {
 
 
 /******* storePage - Pickups ******/
-app.controller('pickupListCtrl', function ($scope, apiPickups) {
+app.controller('pickupListCtrl', function ($scope, apiPickups, yPostReq) {
 
     var self = this;
 
@@ -91,6 +96,14 @@ app.controller('pickupListCtrl', function ($scope, apiPickups) {
         showJoined: true,
         showOpen: true,
         showFull: true
+    };
+    
+    self.join = function(id){
+        yPostReq.req('api/pickup-dates/'+id+'/add/', {}, self.updatePickups(), self.updatePickups());
+    };
+    
+    self.leave = function(id){
+        yPostReq.req('api/pickup-dates/'+id+'/remove/', {}, self.updatePickups(), self.updatePickups());
     };
 
     self.reversed = false;
@@ -207,6 +220,17 @@ app.factory("apiAuth", function ($resource) {
     return $resource("/api/auth/status/:id")
 });
 
+app.service('yPostReq', function ($http, $cookies) {
+    //var csrfmiddlewaretoken = $cookies.get('csrftoken');
+    var yPostReq = {
+        req: function(path, data, success, error){
+            $http.post(path, data).then(success, error);
+        }
+    };
+    
+    return yPostReq;
+});
+
 
 app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, apiUsers, $filter) {
     var yAPIdata = {
@@ -290,9 +314,17 @@ app.controller('storePickerCtrl', function ($scope, $rootScope, yAPI) {
 });
 
 /******* groupPageCtrl ******/
-app.controller('groupPageCtrl', function ($scope, $rootScope, yAPI, $routeParams) {
-    $scope.group = function () {
-        return yAPI.getByID("groups", $routeParams.id);
+app.controller('groupPageCtrl', function (apiUsers, apiGroups, $routeParams, $timeout) {
+    self = this;
+    self.group = apiGroups.get({id:$routeParams.id}, function() {
+        if(self.group !== undefined){
+            self.group.members = self.group.members.map(self.mapUsers);   
+            console.log(self.group);         
+        }
+    });
+    
+    self.mapUsers = function(number){
+        return apiUsers.get({id:number}, function() {});
     };
 });
 
@@ -381,16 +413,15 @@ app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
 
 
 /******* Header ******/
-app.controller('HeaderCtrl', function ($http, $cookies) {
+app.controller('HeaderCtrl', function (yPostReq) {
     var self = this;
     self.logoutdata = {
         email: "",
         password: "",
-        csrfmiddlewaretoken: $cookies.get('csrftoken')
     }
 
     self.logout = function () {
-        $http.post('/api/auth/logout/', self.logoutdata).then(self.logoutSuccess, self.logoutError);
+        yPostReq.req('/api/auth/logout/', self.logoutdata, self.logoutSuccess, self.logoutError);
     };
 
     self.logoutSuccess = function () {
@@ -515,13 +546,13 @@ app.config(function ($mdThemingProvider) {
 app.controller('PanelDialogCtrl', PanelDialogCtrl);
 
 
-function PanelDialogCtrl(mdPanelRef, $rootScope, $http, $cookies) {
+function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
     self = this;
     self._mdPanelRef = mdPanelRef;
     self.activeGroup = $rootScope.activeGroup;    
     
     self.createGroup = function () {
-        $http.post('/api/groups/', self.groupData).then(self.refreshPage, self.closeDialog);
+        yPostReq.req('/api/groups/', self.groupData, self.refreshPage, self.closeDialog);
     };
     
     self.createPickup = function () {
@@ -537,12 +568,12 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, $http, $cookies) {
             store: $rootScope.currentStoreId
         };
         
-        $http.post('/api/pickup-dates/', dataToSend).then(self.refreshPage, self.closeDialog);
+        yPostReq.req('/api/pickup-dates/', dataToSend, self.refreshPage, self.closeDialog);
     };
     
     self.createStore = function () {
         self.storeData.group = self.activeGroup.id;
-        $http.post('/api/stores/', self.storeData).then(self.refreshPage, self.closeDialog);
+        yPostReq.req('/api/stores/', self.storeData, self.refreshPage, self.closeDialog);
     };
     
     self.closeDialog = function () {

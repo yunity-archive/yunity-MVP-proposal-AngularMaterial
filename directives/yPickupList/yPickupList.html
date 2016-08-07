@@ -1,9 +1,9 @@
 <div ng-controller="pickupListCtrl as pickupListCtrl">
     <div>
         <!-- Menu Bar -->
-        <h3 style="display:inline" class="md-title"><i class="icon fa fa-shopping-basket" aria-hidden="true"></i>  Pickups</h3>
+        <h3 style="display:inline" class="md-title"><i class="icon fa fa-shopping-basket" aria-hidden="true"></i>  {{header}}</h3>
         <div style="display: inline-block">
-            <md-button class="small md-primary md-hue-3" aria-label="Create Pickup" ng-click="openPanel('createPickup')">
+            <md-button ng-show="showCreateButton" class="small md-primary md-hue-3" aria-label="Create Pickup" ng-click="openPanel('createPickup')">
                 <i style="font-size: 1.2em;" class="fa fa-plus-circle" aria-hidden="true"></i> Create
             </md-button>
             <md-menu>
@@ -45,16 +45,16 @@
                             <span>{{pickup.date| date:'dd.MM.yyyy'}}</span>                        
                         </span>
                         <div style="padding: .5em">
-                            <div class="pickuplist-person" ng-repeat="collector in pickup.collector_ids">
+                            <a class="pickuplist-person" ng-repeat="collectorId in pickup.collector_ids" href="#/profile/{{collectorId}}">
                                 <img style="width: 2em; height: 2em;" src="assets/images/user.png" class="round"/>
-                            </div>
+                            </a>
                             <div class="md-caption" style="display: inline-block; margin-left: .3em; margin-top: .3em;">({{pickup.collector_ids.length}}/{{pickup.max_collectors}})</div>
                         </div>
                     </div>
-                    <md-button style="margin: 0;" ng-show="{{pickup.isUserMember}}" class="md-accent pickupList-pickup-right">
+                    <md-button ng-click="pickupListCtrl.leave(pickup.id)" style="margin: 0;" ng-show="{{pickup.isUserMember}}" class="md-accent pickupList-pickup-right">
                         <p>Leave</p>
                     </md-button>
-                    <md-button style="margin: 0;" ng-show="{{!pickup.isUserMember && !pickup.isFull}}" class="md-accent md-hue-3 pickupList-pickup-right">
+                    <md-button ng-click="pickupListCtrl.join(pickup.id)"style="margin: 0;" ng-show="{{!pickup.isUserMember && !pickup.isFull}}" class="md-accent md-hue-3 pickupList-pickup-right">
                         <p>Join</p>
                     </md-button>
                     <md-button ng-disabled="true" style="margin: 0;" ng-show="{{!pickup.isUserMember && pickup.isFull}}" class="md-accent pickupList-pickup-right">
