@@ -105,14 +105,14 @@ input[type="search"]{
 .chat-message.received
 {
     margin-left: 15px;
-    color: white;
-    background: #3572B0;
+    color: black;
+    background: #D6D6D6;
 }
 
 .chat-message.received:after
 {
     border-width: 12px 12px 12px 0;
-    border-color: transparent #3572B0;
+    border-color: transparent #D6D6D6;
     left: -11px;
 }
 
@@ -120,14 +120,14 @@ input[type="search"]{
 {
     margin-right: 15px;
     color: white;
-    background: #205081;
+    background: #DB8527;
     margin-left: 20%;
 }
 
 .chat-message.sent:after
 {
     border-width: 12px 0 12px 12px;
-    border-color: transparent #205081;
+    border-color: transparent #DB8527;
     right: -11px;
 }    
 

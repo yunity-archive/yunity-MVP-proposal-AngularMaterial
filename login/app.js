@@ -17,7 +17,7 @@ app.controller('LoginCtrl', function ($http) {
     var self = this;
     
     self.signup = function () {
-        $http.post('/api/users/', self.data).then(self.loginSuccess, self.loginError);
+        $http.post('/api/users/', self.data).then(self.signupSuccess, self.loginError);
     };
     
     
@@ -27,6 +27,11 @@ app.controller('LoginCtrl', function ($http) {
 
     self.loginSuccess = function () {
         window.location.href = "../index.html";
+    };
+    
+    
+    self.signupSuccess = function () {
+        window.location.href = "index.html#";
     };
     
     self.loginError = function () {
