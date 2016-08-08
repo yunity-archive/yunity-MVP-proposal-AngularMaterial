@@ -6,13 +6,13 @@ var app = angular.module('yunityWebApp', ['ngRoute', 'ngCookies', 'ngMaterial', 
 app.config(['$routeProvider', function ($routeProvider) {
         $routeProvider
                 // Home
-                .when("/", {templateUrl: "partials/home/home.html", controller: "AppCtrl"})
+                .when("/", {title: 'yunity | Home', templateUrl: "partials/home/home.html", controller: "storePageCtrl"})
                 // Pages
                 // else 404
-                .when("/groups/:id", {templateUrl: "partials/groups/groups.html", controller: "AppCtrl"})
-                .when("/chat/:id", {templateUrl: "partials/chat/chat.html", controller: "AppCtrl"})
-                .when("/profile/:id", {templateUrl: "partials/profile/profile.html", controller: "AppCtrl"})
-                .when("/stores/:id", {templateUrl: "partials/stores/stores.html", controller: "AppCtrl"});
+                .when("/groups/:id", {title: 'yunity | Group', templateUrl: "partials/groups/groups.html", controller: "groupPageCtrl as ctrl"})
+                .when("/chat/:id", {title: 'yunity | Chat', templateUrl: "partials/chat/chat.html", controller: "chatCtrl as ctrl"})
+                .when("/profile/:id", {title: 'yunity | Profile', templateUrl: "partials/profile/profile.html", controller: "profilePageCtrl"})
+                .when("/stores/:id", {title: 'yunity | Store', templateUrl: "partials/stores/stores.html", controller: "storePageCtrl"});
 
         /*.otherwise("/404", {templateUrl: "partials/404/404.html", controller: "AppCtrl"});*/
     }]);
@@ -40,8 +40,15 @@ app.config(function ($mdThemingProvider) {
 
     $mdThemingProvider.theme('default')
             .primaryPalette('yuniyColors');
-            //.accentPalette('yuniyColors');
+    //.accentPalette('yuniyColors');
 });
+
+// Set Title for current page
+app.run(['$rootScope', '$route', function ($rootScope, $route) {
+        $rootScope.$on('$routeChangeSuccess', function () {
+            document.title = $route.current.title;
+        });
+    }]);
 
 
 /****************** Directives **********************/
@@ -222,24 +229,7 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
                     $log.debug("close RIGHT is done");
                 });
     };
-
-    $scope.toggleSideNav = buildToggler('left');
-    $scope.isOpenSideNav = function () {
-        return $mdSidenav('left').isOpen();
-    };
-
-    function buildToggler(navID) {
-        return function () {
-            // Component lookup should always be available since we are not using `ng-if`
-            $mdSidenav(navID)
-                    .toggle()
-                    .then(function () {
-                        $log.debug("toggle " + navID + " is done");
-                    });
-        };
-    }
-    ;
-
+    
     $rootScope.openPanel = function (panelName) {
         $rootScope.closeSideNav();
         var position = $rootScope._mdPanel.newPanelPosition()
@@ -262,6 +252,26 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
         };
         $rootScope._mdPanel.open(config);
     };
+
+    $scope.isOpenSideNav = function () {
+        return $mdSidenav('left').isOpen();
+    };
+
+    function buildToggler(navID) {
+        return function () {
+            // Component lookup should always be available since we are not using `ng-if`
+            $mdSidenav(navID)
+                    .toggle()
+                    .then(function () {
+                        $log.debug("toggle " + navID + " is done");
+                    });
+        };
+    };
+    
+    
+    $scope.toggleSideNav = buildToggler('left');
+
+    
 });
 
 app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
@@ -297,10 +307,13 @@ app.controller('chatHeaderCtrl', function ($scope, yAPI) {
     this.users = yAPI.users;
 });
 
-app.controller('communityPickerCtrl', function ($scope, $rootScope, yAPI) {
+app.controller('communityPickerCtrl', function ($scope, $timeout, $rootScope, yAPI) {
     self = this;
+    yAPI.updateGroups();
     self.groups = yAPI.groups;
     self.show = false;
+
+    $timeout(self.updateActiveGroup, 3000)
 
     self.isUserMemberOfGroup = function (group) {
         return (group.members.indexOf($rootScope.loggedInUserData.id) != -1);
@@ -500,11 +513,11 @@ app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams
 app.controller('storePickerCtrl', function ($scope, $rootScope, yAPI) {
     $scope.stores = yAPI.activeGroup.getStores;
     $scope.show = true;
-    $scope.showPanel = function(){
+    $scope.showPanel = function () {
         return $rootScope.activeGroup !== undefined;
     };
-    
-    
+
+
 
     $scope.loadStorePage = function (selectedStore) {
         $rootScope.closeSideNav();
@@ -535,11 +548,10 @@ app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, apiU
             return $filter('filter')(yAPIdata[type], {id: value}, true)[0];
         },
         updateGroups: function () {
-            yAPIdata.groups = apiGroups.query(function () {
-                yAPIdata.groups.forEach(function (group) {
+            yAPIdata.groups = apiGroups.query(function (groups) {
+                groups.forEach(function (group) {
                     if (group.members.indexOf($rootScope.loggedInUserData.id) !== -1) {
                         $rootScope.activeGroup = group;
-                        return;
                     }
 
                 });
