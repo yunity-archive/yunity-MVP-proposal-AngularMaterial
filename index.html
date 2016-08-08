@@ -37,12 +37,14 @@
                 <!-- The actuall content of the sides -->
                 <div layout="row" style="margin-top: .4em; min-height: 80%" flex id="mainContent">
 
+                    <div flex></div>
                     <div flex="nogrow" style="width: 18em; padding: .5em;" hide-xs hide-sm>
                         <div ng-include='"templates/communityPicker.html"'></div>
                         <div ng-include='"templates/storePicker.html"'></div>
                     </div>
 
                     <div ng-view flex="nogrow" id="mainView"></div>
+                    <div flex></div>
                     <div flex></div>
                 </div>
                 <div ng-include='"templates/footer.html"'></div>

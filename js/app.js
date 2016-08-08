@@ -6,13 +6,13 @@ var app = angular.module('yunityWebApp', ['ngRoute', 'ngCookies', 'ngMaterial', 
 app.config(['$routeProvider', function ($routeProvider) {
         $routeProvider
                 // Home
-                .when("/", {title: 'yunity | Home', templateUrl: "partials/home/home.html", controller: "storePageCtrl"})
+                .when("/", {title: 'yunity | Home', templateUrl: "partials/home/home.html", controller: "storePageCtrl as ctrl"})
                 // Pages
                 // else 404
                 .when("/groups/:id", {title: 'yunity | Group', templateUrl: "partials/groups/groups.html", controller: "groupPageCtrl as ctrl"})
                 .when("/chat/:id", {title: 'yunity | Chat', templateUrl: "partials/chat/chat.html", controller: "chatCtrl as ctrl"})
-                .when("/profile/:id", {title: 'yunity | Profile', templateUrl: "partials/profile/profile.html", controller: "profilePageCtrl"})
-                .when("/stores/:id", {title: 'yunity | Store', templateUrl: "partials/stores/stores.html", controller: "storePageCtrl"});
+                .when("/profile/:id", {title: 'yunity | Profile', templateUrl: "partials/profile/profile.html", controller: "profilePageCtrl as ctrl"})
+                .when("/stores/:id", {title: 'yunity | Store', templateUrl: "partials/stores/stores.html", controller: "storePageCtrl as ctrl"});
 
         /*.otherwise("/404", {templateUrl: "partials/404/404.html", controller: "AppCtrl"});*/
     }]);
@@ -39,8 +39,8 @@ app.config(function ($mdThemingProvider) {
     });
 
     $mdThemingProvider.theme('default')
-            .primaryPalette('yuniyColors');
-    //.accentPalette('yuniyColors');
+            .primaryPalette('yuniyColors')
+            .accentPalette('yuniyColors');
 });
 
 // Set Title for current page
@@ -58,7 +58,7 @@ app.directive("yPickupList", function () {
         scope: {
             showCreateButton: "@",
             header: "@",
-            showStoreDetail: "@",
+            showStoreDetail: "@"
         }
     };
 });
@@ -81,7 +81,7 @@ app.factory("apiUsers", function ($resource) {
 });
 
 app.factory("apiAuth", function ($resource) {
-    return $resource("/api/auth/status/:id")
+    return $resource("/api/auth/status/:id");
 });
 
 /************* Filter *****************/
@@ -185,10 +185,10 @@ app.controller('autocompleteCtrl', function ($scope, $rootScope, $q, yAPI) {
         //$log.info('Text changed to ' + text);
     }
     function selectedItemChange(item) {
-        if (item.name != undefined) {
+        if (item.name !== undefined) {
             $rootScope.activeGroup = item;
             //clear Input
-            self.clear()
+            self.clear();
             //$scope.placeholder = item.name;
             window.location.href = "#/groups/" + item.id + "/";
         }
@@ -215,7 +215,7 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
     // Update Login Status
     $rootScope.loggedInUserData = $http.get('/api/auth/status').
             success(function (data) {
-                if (data.display_name != "") {
+                if (data.display_name !== "") {
                     $rootScope.loggedInUserData = data;
                 } else {
                     window.location.href = "/login/index.html";
@@ -229,7 +229,7 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
                     $log.debug("close RIGHT is done");
                 });
     };
-    
+
     $rootScope.openPanel = function (panelName) {
         $rootScope.closeSideNav();
         var position = $rootScope._mdPanel.newPanelPosition()
@@ -266,12 +266,13 @@ app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPan
                         $log.debug("toggle " + navID + " is done");
                     });
         };
-    };
-    
-    
+    }
+    ;
+
+
     $scope.toggleSideNav = buildToggler('left');
 
-    
+
 });
 
 app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
@@ -280,10 +281,7 @@ app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
 
     $scope.closeUserList = function () {
         // Component lookup should always be available since we are not using `ng-if`
-        $mdSidenav('userList').close()
-                .then(function () {
-                    $log.debug("close RIGHT is done");
-                });
+        $mdSidenav('userList').close();
     };
 
     $scope.toggleUserList = buildToggler('userList');
@@ -295,10 +293,7 @@ app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
         return function () {
             // Component lookup should always be available since we are not using `ng-if`
             $mdSidenav(navID)
-                    .toggle()
-                    .then(function () {
-                        $log.debug("toggle " + navID + " is done");
-                    });
+                    .toggle();
         };
     }
 });
@@ -313,11 +308,11 @@ app.controller('communityPickerCtrl', function ($scope, $timeout, $rootScope, yA
     self.groups = yAPI.groups;
     self.show = false;
 
-    $timeout(self.updateActiveGroup, 3000)
+    $timeout(self.updateActiveGroup, 3000);
 
     self.isUserMemberOfGroup = function (group) {
-        return (group.members.indexOf($rootScope.loggedInUserData.id) != -1);
-    }
+        return (group.members.indexOf($rootScope.loggedInUserData.id) !== -1);
+    };
 
     $scope.setActiveGroup = function (selectedGroup) {
         $rootScope.activeGroup = selectedGroup;
@@ -331,8 +326,12 @@ app.controller('communityPickerCtrl', function ($scope, $timeout, $rootScope, yA
     };
 });
 
-app.controller('groupPageCtrl', function (apiUsers, apiGroups, $routeParams, $timeout) {
+app.controller('groupPageCtrl', function (apiUsers, apiGroups, apiStores, $routeParams) {
     self = this;
+    self.stores = apiStores.query({group: $routeParams.id}, function (stores) {
+        console.log(stores);
+    });
+
     self.group = apiGroups.get({id: $routeParams.id}, function () {
         if (self.group !== undefined) {
             self.group.members = self.group.members.map(self.mapUsers);
@@ -342,9 +341,14 @@ app.controller('groupPageCtrl', function (apiUsers, apiGroups, $routeParams, $ti
     self.mapUsers = function (number) {
         return apiUsers.get({id: number}, function () {});
     };
+
+    self.loadStorePage = function (selectedStore) {
+        window.location.href = "#/stores/" + selectedStore.id + "/";
+    };
+
 });
 
-app.controller('groupPickerCtrl', function ($rootScope, apiGroups, yPostReq, yAPI) {
+app.controller('groupPickerCtrl', function ($rootScope, apiGroups, yPostReq) {
     self = this;
     self.groups = apiGroups.query(function (groups) {
         groups.forEach(function (group) {
@@ -383,8 +387,8 @@ app.controller('HeaderCtrl', function (yPostReq) {
     var self = this;
     self.logoutdata = {
         email: "",
-        password: "",
-    }
+        password: ""
+    };
 
     self.logout = function () {
         yPostReq.req('/api/auth/logout/', self.logoutdata, self.logoutSuccess, self.logoutError);
@@ -460,6 +464,38 @@ app.controller('pickupListCtrl', function ($scope, apiPickups, yPostReq, $rootSc
     }
 });
 
+
+
+
+app.controller('mapPickerCtrl', function ($scope) {
+    $scope.$on('leafletDirectiveMap.click', function (event, args) {
+        var leafEvent = args.leafletEvent;
+        console.log(leafEvent);
+        $scope.markers = [{
+            lat: leafEvent.latlng.lat,
+            lng: leafEvent.latlng.lng,
+            message: "New Store"
+        }];
+    });
+
+
+    $scope.markers = new Array();
+            
+    angular.extend($scope, {
+        currentStore: {
+            lat: 49.9,
+            lng: 8.660232,
+            zoom: 12
+        },
+        events: {
+            map: {
+                enable: ['click'],
+                logic: 'emit'
+            }
+        }
+    });
+});
+
 app.controller('profilePageCtrl', function ($scope, yAPI, $routeParams, $timeout) {
 
     function getCurrentProfile() {
@@ -470,20 +506,18 @@ app.controller('profilePageCtrl', function ($scope, yAPI, $routeParams, $timeout
     $timeout(getCurrentProfile, 1500);
 });
 
-app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams, $timeout) {
+app.controller('storePageCtrl', function ($scope, $rootScope, apiStores, $routeParams, $timeout) {
+    self = this;
 
-    function getCurrentStore() {
-        $scope.store = yAPI.getByID("stores", $routeParams.id);
-
-        if ($scope.store !== undefined) {
+    self.store = apiStores.get({id: $routeParams.id}, function () {
+        if (self.store !== undefined) {
             createMarker();
         }
-    }
-    getCurrentStore();
-    $timeout(getCurrentStore, 1500);
+    });
+
     $rootScope.currentStoreId = $routeParams.id;
 
-    angular.extend($scope, {
+    angular.extend(self, {
         currentStore: {
             lat: 49.9,
             lng: 8.660232,
@@ -492,17 +526,17 @@ app.controller('storePageCtrl', function ($scope, $rootScope, yAPI, $routeParams
     });
 
     function createMarker() {
-        angular.extend($scope, {
+        angular.extend(self, {
             currentStore: {
-                lat: $scope.store.latitude,
-                lng: $scope.store.longitude,
+                lat: self.store.latitude,
+                lng: self.store.longitude,
                 zoom: 14
             },
             markers: {
                 m1: {
-                    lat: $scope.store.latitude,
-                    lng: $scope.store.longitude,
-                    message: $scope.store.name
+                    lat: self.store.latitude,
+                    lng: self.store.longitude,
+                    message: self.store.name
                 }
             }
         });
@@ -538,7 +572,7 @@ app.service('yAPI', function ($rootScope, apiGroups, apiStores, apiPickups, apiU
         users: null,
         activeGroup: {
             getStores: function () {
-                if ($rootScope.activeGroup == undefined)
+                if ($rootScope.activeGroup === undefined)
                     return;
                 return $filter('filter')(yAPIdata.stores, {group: $rootScope.activeGroup.id}, true);
             }
@@ -588,7 +622,7 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
     thisDialog.openPanel = function (panelName) {
         thisDialog.closeDialog();
         $rootScope.openPanel(panelName);
-    }
+    };
 
     thisDialog.createGroup = function () {
         yPostReq.req('/api/groups/', thisDialog.groupData, thisDialog.refreshPage, thisDialog.closeDialog);
@@ -616,7 +650,7 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
     };
 
     thisDialog.closeDialog = function () {
-        thisDialog._mdPanelRef && thisDialog._mdPanelRef.close()
+        thisDialog._mdPanelRef && thisDialog._mdPanelRef.close();
     };
 
 
@@ -624,3 +658,4 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
         location.reload();
     };
 }
+

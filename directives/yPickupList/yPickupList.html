@@ -34,7 +34,7 @@
     </div>
     
     <!-- Items -->
-    <md-content style="overflow: auto; max-height: 40em; padding: 0">
+    <md-content style="padding: 0">
         <section ng-repeat="pickupDate in pickups| filter:pickupListCtrl.filterPickups | groupByDate | orderBy:'date':pickupListCtrl.reversed">
             <md-subheader class="md-sticky">{{pickupDate.date| date:'EEEE, dd.MM.yyyy'}}</md-subheader>
             <md-list>

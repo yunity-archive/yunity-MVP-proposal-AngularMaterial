@@ -23,7 +23,7 @@
                 <textarea ng-model="ctrl.groupData.adress" rows="5" md-select-on-focus></textarea>
             </md-input-container>
             
-            
+            <!--
             <md-input-container class="md-block">
                 <label>Latitude</label>
                 <textarea ng-model="ctrl.groupData.latitude" rows="5" md-select-on-focus></textarea>
@@ -34,11 +34,19 @@
                 <label>Longitude</label>
                 <textarea ng-model="ctrl.groupData.longitude" rows="5" md-select-on-focus></textarea>
             </md-input-container>
+            -->
+            
+            
+            <div ng-controller="mapPickerCtrl">
+                <leaflet lf-center="currentStore" event-broadcast="events" markers="markers" height="20em" width="100%"></leaflet>
+            </div>
+            
 
             <div layout="row" layout-align="end center">
                 <md-button ng-click="ctrl.closeDialog()">Cancel</md-button>
                 <md-button ng-click="ctrl.createGroup()" href="#/" class="md-raised md-primary md-hue-3" type="submit">Create</md-button>
             </div>
+            
         </form>
     </md-content>
 </div>

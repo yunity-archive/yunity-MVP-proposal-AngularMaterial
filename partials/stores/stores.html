@@ -1,24 +1,18 @@
 <div layout="row" class="md-whiteframe-1dp">
     <md-content layout-padding flex>
-        <h1 class="md-headline">{{store.name}}</h1>
-        <span><i class="fa fa-map-marker" aria-hidden="true"></i> {{store.address}}</span>
-        <md-tabs md-dynamic-height md-border-bottom flex>
-            <md-tab label="pickups">
-                <md-content style="padding-top: 2em;">
-                    <y-pickup-list show-create-button="true" header="Pickups"></y-pickup-list>
-                </md-content>
-            </md-tab>
-            <md-tab label="description">
-                <md-content style="padding-top: 2em;">
-                    <p class="md-subhead">{{store.description}}</p>
-                </md-content>
-            </md-tab>
-            <md-tab label="map">
-                <md-content style="padding-top: 2em;">
-                    <leaflet lf-center="currentStore" markers="markers" height="480px" width="100%"></leaflet>
-                </md-content>
-            </md-tab>
-        </md-tabs>
+        <div style="position: relative; min-height: 20em;">
+            <div style="float: right; max-width: 40%; width:25em; overflow: hidden">
+                <leaflet lf-center="ctrl.currentStore" markers="ctrl.markers" height="20em" width="100%"></leaflet>
+            </div>
+            <h1 class="md-headline">{{ctrl.store.name}}</h1>
+
+            <span><i class="fa fa-map-marker" aria-hidden="true"></i> {{ctrl.store.address}}</span>
+            <p>{{ctrl.store.description}}</p>
+
+        </div>
+        <div style="padding-top: 2em;">
+            <y-pickup-list show-create-button="true" header="Pickups"></y-pickup-list>
+        </div>
     </md-content>
 </div>
 
