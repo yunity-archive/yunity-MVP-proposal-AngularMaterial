@@ -37,8 +37,8 @@
             -->
             
             
-            <div ng-controller="mapPickerCtrl">
-                <leaflet lf-center="currentStore" event-broadcast="events" markers="markers" height="20em" width="100%"></leaflet>
+            <div ng-controller="mapPickerCtrl as mapPickerCtrl">
+                <leaflet lf-center="mapPickerCtrl.currentPosition" event-broadcast="mapPickerCtrl.events" markers="mapPickerCtrl.markers" height="20em" width="100%"></leaflet>
             </div>
             
 

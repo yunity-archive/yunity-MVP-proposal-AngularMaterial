@@ -35,14 +35,14 @@
     
     <!-- Items -->
     <md-content style="padding: 0">
-        <section ng-repeat="pickupDate in pickups| filter:pickupListCtrl.filterPickups | groupByDate | orderBy:'date':pickupListCtrl.reversed">
+        <section ng-repeat="pickupDate in pickupListCtrl.pickups| filter:pickupListCtrl.filterPickups | groupByDate | orderBy:'date':pickupListCtrl.reversed">
             <md-subheader class="md-sticky">{{pickupDate.date| date:'EEEE, dd.MM.yyyy'}}</md-subheader>
             <md-list>
                 <md-list-item style="padding: 0; min-height: 0; width: 100%" layout="row" layout-align="end stretch" class="md-2-line pickupList-pickup" ng-repeat="pickup in pickupDate.items| orderBy:['-date']:pickupListCtrl.reversed">
                     <div flex class="pickupList-pickup-left">
                         <span style="margin: 1em 0; padding: .5em;">
                             <span style="margin-right: .5em;" class="md-title">{{pickup.date| date:'HH:mm'}}</span>
-                            <span>{{pickup.date| date:'dd.MM.yyyy'}}</span>                        
+                            <span>{{pickup.date| date:'EEEE, dd.MM.yyyy'}}</span>                        
                         </span>
                         <div style="padding: .5em">
                             <a class="pickuplist-person" ng-repeat="collectorId in pickup.collector_ids" href="#/profile/{{collectorId}}">

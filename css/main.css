@@ -136,10 +136,11 @@ input[type="search"]{
 
 /* Pickup Lists */
 .pickupList-pickup {
-    border: thin solid #dddddd;
+    border: 2px solid #dddddd;
     border-radius: 5px;
     margin-bottom: 1em;
     padding: 0em !important;
+    background-color: #fbfbfb;
 }
 
 .pickupList-pickup-left {

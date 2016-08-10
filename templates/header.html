@@ -8,7 +8,7 @@
         </span>
         <span flex hide show-xs show-sm></span>
         <span flex="noshrink" style="width: 2.5em" hide-xs hide-sm>
-            <a href="/#/" aria-label="Yunity">
+            <a href="#/groups/{{activeGroup.id}}" aria-label="Yunity">
                 <img src="assets/icons/Logo-white.png" alt="Yunity" style="width: 2em;">                            
             </a>
         </span>
@@ -24,12 +24,12 @@
                     md-items="item in ctrl.querySearch(ctrl.searchText)"
                     md-item-text="item.display"
                     md-min-length="0"
-                    placeholder={{placeholder}}>
+                    placeholder={{ctrl.placeholder}}>
                     <md-item-template>
                         <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.name}}</span>
                     </md-item-template>
                     <md-not-found>
-                        Nothing matching "{{ctrl.searchText}}" were found.
+                        Nothing matching "{{ctrl.searchText}}" was found.
                     </md-not-found>
                 </md-autocomplete>
             </md-content>
@@ -65,12 +65,6 @@
             </md-menu-bar>
         </span>
 
-
-        <span hide-xs>
-            <md-button href="#/groups/{{activeGroup.id}}" class="md-icon-button" aria-label="Community">
-                <i class="fa fa-fw fa-home"></i>
-            </md-button>                            
-        </span>
         <span flex hide-xs></span>
         
         <span>

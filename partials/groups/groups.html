@@ -1,7 +1,23 @@
 <md-content layout-padding>
-    <h1 class="md-headline">{{ctrl.group.name}}</h1>
-    <p>{{ctrl.group.description}}</p>
-    <!--<div><y-Pickup-List header="Your next Pickups" show-store-detail="true"/></div>-->
+    <form editable-form name="editGroupInfoForm" onbeforesave="ctrl.updateInfo($data)">
+        <h1 class="md-headline" style="display: inline-block;" editable-text="ctrl.group.name" e-name="name">{{ctrl.group.name}}</h1>
+
+        <md-button class="md-icon-button" aria-label="Edit" ng-click="editGroupInfoForm.$show()" ng-hide="editGroupInfoForm.$visible">
+            <i class="fa fa-pencil" aria-hidden="true"></i>
+        </md-button>  
+        <br/>
+        <p style="width: 100%" editable-textarea="ctrl.group.description" e-name="description">{{ctrl.group.description}}</p>
+
+        <div ng-show="editGroupInfoForm.$visible">
+            <md-button type="submit" class="md-raised md-primary" ng-disabled="editGroupInfoForm.$waiting">
+                Save
+            </md-button>
+            <md-button type="button" ng-disabled="editGroupInfoForm.$waiting" ng-click="editGroupInfoForm.$cancel()">
+                Cancel
+            </md-button>
+        </div>
+
+    </form>
 
     <md-tabs md-dynamic-height md-border-bottom flex>
         <md-tab label="pickups">
@@ -11,12 +27,12 @@
         </md-tab>
         <md-tab label="members">
             <md-grid-list
-                md-cols-xs="2" md-cols-sm="3" md-cols-md="4" md-cols-gt-md="6"
+                md-cols-xs="5" md-cols-sm="6" md-cols-md="7" md-cols-gt-md="8"
                 md-row-height-gt-md="1:1" md-row-height="2:2"
                 md-gutter="12px" md-gutter-gt-sm="8px" >
                 <md-grid-tile class="yellow" ng-repeat="member in ctrl.group.members">
                     <a href="#/profile/{{member.id}}">
-                        <img src="assets/images/user.png"/>
+                        <img style="height: 100%; width: 100%" src="assets/images/user.png"/>
                         <md-grid-tile-footer>
                             <h3>{{member.first_name}}</h3>
                         </md-grid-tile-footer>
@@ -26,16 +42,11 @@
         </md-tab>
         <md-tab label="stores">
             <md-list layout-padding>
-                <md-list-item ng-repeat="store in ctrl.stores" ng-click="ctrl.loadStorePage(store)">
+                <md-list-item ng-repeat="store in ctrl.stores" ng-click="ctrl.loadStorePage(store)" class="noright">
                     <p>{{store.name}}</p>
-                    <section class="md-secondary" >
-                        <md-button class="md-icon-button" ng-click="doSecondaryAction($event)">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </md-button>
-                        <md-button class="md-icon-button" ng-click="doSecondaryAction($event)">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </md-button>                        
-                    </section>
+                    <md-button class="md-secondary md-icon-button" aria-label="Edit" ng-click="openPanel('createStore')">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </md-button>   
                 </md-list-item>
             </md-list>
         </md-tab>

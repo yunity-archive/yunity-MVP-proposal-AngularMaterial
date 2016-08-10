@@ -1,14 +1,16 @@
-var app = angular.module('yunityWebApp', ['ngRoute', 'ngCookies', 'ngMaterial', 'ngMdIcons', 'ngResource', 'leaflet-directive']);
+var app = angular.module('yunityWebApp', ['ngRoute', 'ngCookies', 'xeditable', 'ngMaterial', 'ngMdIcons', 'ngResource', 'leaflet-directive']);
+
+app.config(function($resourceProvider) {
+  $resourceProvider.defaults.stripTrailingSlashes = false;
+});
+
 
 /**
  * Configure the Routes
  */
 app.config(['$routeProvider', function ($routeProvider) {
         $routeProvider
-                // Home
-                .when("/", {title: 'yunity | Home', templateUrl: "partials/home/home.html", controller: "storePageCtrl as ctrl"})
-                // Pages
-                // else 404
+                .when("/", {title: 'yunity | Home', templateUrl: "partials/home/home.html", controller: "homePageCtrl as ctrl"})
                 .when("/groups/:id", {title: 'yunity | Group', templateUrl: "partials/groups/groups.html", controller: "groupPageCtrl as ctrl"})
                 .when("/chat/:id", {title: 'yunity | Chat', templateUrl: "partials/chat/chat.html", controller: "chatCtrl as ctrl"})
                 .when("/profile/:id", {title: 'yunity | Profile', templateUrl: "partials/profile/profile.html", controller: "profilePageCtrl as ctrl"})
@@ -65,23 +67,26 @@ app.directive("yPickupList", function () {
 
 /************* Factories **************/
 app.factory("apiGroups", function ($resource) {
-    return $resource("/api/groups/:id");
+    return $resource("/api/groups/:id/", null, 
+    {
+        'update': { method:'PUT' }
+    });
 });
 
 app.factory("apiStores", function ($resource) {
-    return $resource("/api/stores/:id");
+    return $resource("/api/stores/:id/");
 });
 
 app.factory("apiPickups", function ($resource) {
-    return $resource("/api/pickup-dates/:id");
+    return $resource("/api/pickup-dates/:id/");
 });
 
 app.factory("apiUsers", function ($resource) {
-    return $resource("/api/users/:id");
+    return $resource("/api/users/:id/");
 });
 
 app.factory("apiAuth", function ($resource) {
-    return $resource("/api/auth/status/:id");
+    return $resource("/api/auth/status/:id/");
 });
 
 /************* Filter *****************/
@@ -132,7 +137,7 @@ app.filter("groupByDate", function ($filter) {
 
 /*********** Controller **************/
 
-app.controller('autocompleteCtrl', function ($scope, $rootScope, $q, yAPI) {
+app.controller('autocompleteCtrl', function ($rootScope, $q, yAPI) {
 
     var self = this;
     self.simulateQuery = false;
@@ -142,9 +147,8 @@ app.controller('autocompleteCtrl', function ($scope, $rootScope, $q, yAPI) {
     self.querySearch = querySearch;
     self.selectedItemChange = selectedItemChange;
     self.searchTextChange = searchTextChange;
-    self.newState = newState;
     self.searchText = null;
-    $scope.placeholder = "Search...";
+    self.placeholder = "Search...";
 
     loadData();
 
@@ -157,10 +161,7 @@ app.controller('autocompleteCtrl', function ($scope, $rootScope, $q, yAPI) {
             self.entries = result[0];
         });
     }
-
-    function newState(state) {
-        alert("Sorry! This function is not yet implemented!");
-    }
+    
     // ******************************
     // Internal methods
     // ******************************
@@ -189,7 +190,6 @@ app.controller('autocompleteCtrl', function ($scope, $rootScope, $q, yAPI) {
             $rootScope.activeGroup = item;
             //clear Input
             self.clear();
-            //$scope.placeholder = item.name;
             window.location.href = "#/groups/" + item.id + "/";
         }
     }
@@ -209,6 +209,7 @@ app.controller('autocompleteCtrl', function ($scope, $rootScope, $q, yAPI) {
 app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPanel, $http, $cookies) {
 
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
+    $http.defaults.headers.put['X-CSRFToken'] = $cookies.get('csrftoken');
 
     $rootScope._mdPanel = $mdPanel;
 
@@ -298,11 +299,11 @@ app.controller('chatCtrl', function ($scope, $mdSidenav, yAPI, $routeParams) {
     }
 });
 
-app.controller('chatHeaderCtrl', function ($scope, yAPI) {
+app.controller('chatHeaderCtrl', function (yAPI) {
     this.users = yAPI.users;
 });
 
-app.controller('communityPickerCtrl', function ($scope, $timeout, $rootScope, yAPI) {
+app.controller('communityPickerCtrl', function ($timeout, $rootScope, yAPI) {
     self = this;
     yAPI.updateGroups();
     self.groups = yAPI.groups;
@@ -314,15 +315,11 @@ app.controller('communityPickerCtrl', function ($scope, $timeout, $rootScope, yA
         return (group.members.indexOf($rootScope.loggedInUserData.id) !== -1);
     };
 
-    $scope.setActiveGroup = function (selectedGroup) {
+    self.setActiveGroup = function (selectedGroup) {
         $rootScope.activeGroup = selectedGroup;
         $rootScope.closeSideNav();
         self.show = false;
         window.location.href = "#/groups/" + selectedGroup.id + "/";
-    };
-
-    $scope.openMenu = function ($mdOpenMenu, ev) {
-        $mdOpenMenu(ev);
     };
 });
 
@@ -344,6 +341,10 @@ app.controller('groupPageCtrl', function (apiUsers, apiGroups, apiStores, $route
 
     self.loadStorePage = function (selectedStore) {
         window.location.href = "#/stores/" + selectedStore.id + "/";
+    };
+    
+    self.updateInfo = function(data){
+        apiGroups.update({id: self.group.id}, self.group);
     };
 
 });
@@ -397,14 +398,18 @@ app.controller('HeaderCtrl', function (yPostReq) {
     self.logoutSuccess = function () {
         window.location.href = "login/index.html";
     };
-    self.logoutError = function (data) {
+    self.logoutError = function () {
         alert("error");
     };
 });
 
+app.controller('homePageCtrl', function ($rootScope) {
+    location.href = "/groups/" + $rootScope.activeGroup.id;
+});
+
 app.controller('PanelDialogCtrl', PanelDialogCtrl);
 
-app.controller('pickupListCtrl', function ($scope, apiPickups, yPostReq, $rootScope) {
+app.controller('pickupListCtrl', function (apiPickups, yPostReq, $rootScope) {
     var self = this;
 
     self.updatePickups = function () {
@@ -423,7 +428,7 @@ app.controller('pickupListCtrl', function ($scope, apiPickups, yPostReq, $rootSc
                 }
 
             });
-            $scope.pickups = pickups;
+            self.pickups = pickups;
         });
     };
 
@@ -468,10 +473,11 @@ app.controller('pickupListCtrl', function ($scope, apiPickups, yPostReq, $rootSc
 
 
 app.controller('mapPickerCtrl', function ($scope) {
+    var self = this;
     $scope.$on('leafletDirectiveMap.click', function (event, args) {
         var leafEvent = args.leafletEvent;
         console.log(leafEvent);
-        $scope.markers = [{
+        self.markers = [{
             lat: leafEvent.latlng.lat,
             lng: leafEvent.latlng.lng,
             message: "New Store"
@@ -479,10 +485,10 @@ app.controller('mapPickerCtrl', function ($scope) {
     });
 
 
-    $scope.markers = new Array();
+    self.markers = new Array();
             
-    angular.extend($scope, {
-        currentStore: {
+    angular.extend(self, {
+        currentPosition: {
             lat: 49.9,
             lng: 8.660232,
             zoom: 12
@@ -496,17 +502,17 @@ app.controller('mapPickerCtrl', function ($scope) {
     });
 });
 
-app.controller('profilePageCtrl', function ($scope, yAPI, $routeParams, $timeout) {
-
+app.controller('profilePageCtrl', function (yAPI, $routeParams, $timeout) {
+    self = this;
     function getCurrentProfile() {
-        $scope.profile = yAPI.getByID("users", $routeParams.id);
+        self.profile = yAPI.getByID("users", $routeParams.id);
     }
 
     getCurrentProfile();
     $timeout(getCurrentProfile, 1500);
 });
 
-app.controller('storePageCtrl', function ($scope, $rootScope, apiStores, $routeParams, $timeout) {
+app.controller('storePageCtrl', function ($rootScope, apiStores, $routeParams, $timeout) {
     self = this;
 
     self.store = apiStores.get({id: $routeParams.id}, function () {
@@ -544,21 +550,22 @@ app.controller('storePageCtrl', function ($scope, $rootScope, apiStores, $routeP
     ;
 });
 
-app.controller('storePickerCtrl', function ($scope, $rootScope, yAPI) {
-    $scope.stores = yAPI.activeGroup.getStores;
-    $scope.show = true;
-    $scope.showPanel = function () {
+app.controller('storePickerCtrl', function ($rootScope, yAPI) {
+    self = this;
+    self.stores = yAPI.activeGroup.getStores;
+    self.show = true;
+    self.showPanel = function () {
         return $rootScope.activeGroup !== undefined;
     };
 
 
 
-    $scope.loadStorePage = function (selectedStore) {
+    self.loadStorePage = function (selectedStore) {
         $rootScope.closeSideNav();
         window.location.href = "#/stores/" + selectedStore.id + "/";
     };
 
-    $scope.openMenu = function ($mdOpenMenu, ev) {
+    self.openMenu = function ($mdOpenMenu, ev) {
         $mdOpenMenu(ev);
     };
 });
