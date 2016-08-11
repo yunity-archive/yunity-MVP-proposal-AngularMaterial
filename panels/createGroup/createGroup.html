@@ -36,11 +36,7 @@
             </md-input-container>
             -->
             
-            
-            <div ng-controller="mapPickerCtrl as mapPickerCtrl">
-                <leaflet lf-center="mapPickerCtrl.currentPosition" event-broadcast="mapPickerCtrl.events" markers="mapPickerCtrl.markers" height="20em" width="100%"></leaflet>
-            </div>
-            
+            <y-map-picker update-function="ctrl.updateMarkerPosFn(position)" height="20em" width="100%"></y-map-picker>
 
             <div layout="row" layout-align="end center">
                 <md-button ng-click="ctrl.closeDialog()">Cancel</md-button>

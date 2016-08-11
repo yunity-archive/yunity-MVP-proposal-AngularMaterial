@@ -1,7 +1,7 @@
 var app = angular.module('yunityWebApp', ['ngRoute', 'ngCookies', 'xeditable', 'ngMaterial', 'ngMdIcons', 'ngResource', 'leaflet-directive']);
 
-app.config(function($resourceProvider) {
-  $resourceProvider.defaults.stripTrailingSlashes = false;
+app.config(function ($resourceProvider) {
+    $resourceProvider.defaults.stripTrailingSlashes = false;
 });
 
 
@@ -54,6 +54,19 @@ app.run(['$rootScope', '$route', function ($rootScope, $route) {
 
 
 /****************** Directives **********************/
+
+app.directive("yMapPicker", function () {
+    return {
+        templateUrl: 'directives/yMapPicker/yMapPicker.html',
+        scope: {
+            updateFunction: "&",
+            position: "@",
+            height: "@",
+            width: "@"
+        }
+    };
+});
+
 app.directive("yPickupList", function () {
     return {
         templateUrl: 'directives/yPickupList/yPickupList.html',
@@ -67,10 +80,10 @@ app.directive("yPickupList", function () {
 
 /************* Factories **************/
 app.factory("apiGroups", function ($resource) {
-    return $resource("/api/groups/:id/", null, 
-    {
-        'update': { method:'PUT' }
-    });
+    return $resource("/api/groups/:id/", null,
+            {
+                'update': {method: 'PUT'}
+            });
 });
 
 app.factory("apiStores", function ($resource) {
@@ -86,7 +99,7 @@ app.factory("apiUsers", function ($resource) {
 });
 
 app.factory("apiAuth", function ($resource) {
-    return $resource("/api/auth/status/:id/");
+    return $resource("/api/auth/status/");
 });
 
 /************* Filter *****************/
@@ -161,7 +174,7 @@ app.controller('autocompleteCtrl', function ($rootScope, $q, yAPI) {
             self.entries = result[0];
         });
     }
-    
+
     // ******************************
     // Internal methods
     // ******************************
@@ -325,9 +338,7 @@ app.controller('communityPickerCtrl', function ($timeout, $rootScope, yAPI) {
 
 app.controller('groupPageCtrl', function (apiUsers, apiGroups, apiStores, $routeParams) {
     self = this;
-    self.stores = apiStores.query({group: $routeParams.id}, function (stores) {
-        console.log(stores);
-    });
+    self.stores = apiStores.query({group: $routeParams.id}, function (stores) {});
 
     self.group = apiGroups.get({id: $routeParams.id}, function () {
         if (self.group !== undefined) {
@@ -342,8 +353,8 @@ app.controller('groupPageCtrl', function (apiUsers, apiGroups, apiStores, $route
     self.loadStorePage = function (selectedStore) {
         window.location.href = "#/stores/" + selectedStore.id + "/";
     };
-    
-    self.updateInfo = function(data){
+
+    self.updateInfo = function (data) {
         apiGroups.update({id: self.group.id}, self.group);
     };
 
@@ -472,27 +483,36 @@ app.controller('pickupListCtrl', function (apiPickups, yPostReq, $rootScope) {
 
 
 
-app.controller('mapPickerCtrl', function ($scope) {
+app.controller('yMapPickerCtrl', function ($scope) {
     var self = this;
+
     $scope.$on('leafletDirectiveMap.click', function (event, args) {
         var leafEvent = args.leafletEvent;
-        console.log(leafEvent);
-        self.markers = [{
-            lat: leafEvent.latlng.lat,
-            lng: leafEvent.latlng.lng,
-            message: "New Store"
-        }];
+        var currentMarkerPosition = {
+                lat: leafEvent.latlng.lat,
+                lng: leafEvent.latlng.lng
+            };
+        self.markers = [currentMarkerPosition];
+        $scope.updateFunction({position: currentMarkerPosition});
     });
-
+    
+    
 
     self.markers = new Array();
-            
+    
+    if ($scope.position !== undefined) {
+        self.currentPosition = JSON.parse($scope.position);
+    } else {
+        angular.extend(self, {
+            currentPosition: {
+                lat: 49.9,
+                lng: 8.660232,
+                zoom: 2
+            }
+        });
+    }
+
     angular.extend(self, {
-        currentPosition: {
-            lat: 49.9,
-            lng: 8.660232,
-            zoom: 12
-        },
         events: {
             map: {
                 enable: ['click'],
@@ -502,14 +522,9 @@ app.controller('mapPickerCtrl', function ($scope) {
     });
 });
 
-app.controller('profilePageCtrl', function (yAPI, $routeParams, $timeout) {
+app.controller('profilePageCtrl', function (apiUsers, $routeParams) {
     self = this;
-    function getCurrentProfile() {
-        self.profile = yAPI.getByID("users", $routeParams.id);
-    }
-
-    getCurrentProfile();
-    $timeout(getCurrentProfile, 1500);
+    self.profile = apiUsers.get({id: $routeParams.id}, function () {});
 });
 
 app.controller('storePageCtrl', function ($rootScope, apiStores, $routeParams, $timeout) {
@@ -557,8 +572,6 @@ app.controller('storePickerCtrl', function ($rootScope, yAPI) {
     self.showPanel = function () {
         return $rootScope.activeGroup !== undefined;
     };
-
-
 
     self.loadStorePage = function (selectedStore) {
         $rootScope.closeSideNav();
@@ -624,6 +637,15 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
     thisDialog = this;
     thisDialog._mdPanelRef = mdPanelRef;
     thisDialog.activeGroup = $rootScope.activeGroup;
+    thisDialog.position = {
+        lat: 49.9,
+        lng: 8.660232,
+        zoom: 12
+    };
+    
+    thisDialog.updateMarkerPosFn = function(position){
+        thisDialog.createdPosition = position;
+    };
 
 
     thisDialog.openPanel = function (panelName) {
@@ -632,6 +654,8 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
     };
 
     thisDialog.createGroup = function () {
+        thisDialog.groupData.latitude = thisDialog.createdPosition.lat;
+        thisDialog.groupData.longitude = thisDialog.createdPosition.lng;
         yPostReq.req('/api/groups/', thisDialog.groupData, thisDialog.refreshPage, thisDialog.closeDialog);
     };
 
