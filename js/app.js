@@ -60,9 +60,11 @@ app.directive("yMapPicker", function () {
         templateUrl: 'directives/yMapPicker/yMapPicker.html',
         scope: {
             updateFunction: "&",
-            position: "@",
+            position: "=",
             height: "@",
-            width: "@"
+            width: "@",
+            markers: "=",
+            disabled: "="
         }
     };
 });
@@ -82,12 +84,17 @@ app.directive("yPickupList", function () {
 app.factory("apiGroups", function ($resource) {
     return $resource("/api/groups/:id/", null,
             {
-                'update': {method: 'PUT'}
+                'update': {method: 'PUT'},
+                'delete': {method: 'DELETE'}
             });
 });
 
 app.factory("apiStores", function ($resource) {
-    return $resource("/api/stores/:id/");
+    return $resource("/api/stores/:id/", null,
+            {
+                'update': {method: 'PUT'},
+                'delete': {method: 'DELETE'}
+            });
 });
 
 app.factory("apiPickups", function ($resource) {
@@ -221,8 +228,7 @@ app.controller('autocompleteCtrl', function ($rootScope, $q, yAPI) {
 
 app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPanel, $http, $cookies) {
 
-    $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
-    $http.defaults.headers.put['X-CSRFToken'] = $cookies.get('csrftoken');
+    $http.defaults.headers.common['X-CSRFToken'] = $cookies.get('csrftoken');
 
     $rootScope._mdPanel = $mdPanel;
 
@@ -338,13 +344,41 @@ app.controller('communityPickerCtrl', function ($timeout, $rootScope, yAPI) {
 
 app.controller('groupPageCtrl', function (apiUsers, apiGroups, apiStores, $routeParams) {
     self = this;
-    self.stores = apiStores.query({group: $routeParams.id}, function (stores) {});
+    self.stores = apiStores.query({group: $routeParams.id}, function (stores) {
+        self.markers = {};
+
+        stores.forEach(function (store) {
+            self.markers[store.id] = {
+                lat: store.latitude,
+                lng: store.longitude,
+                message: store.name
+            };
+        });
+        console.log(self.markers);
+    });
+
+    self.currentPosition = {
+        lat: 49.9,
+        lng: 8.660232,
+        zoom: 3
+    };
 
     self.group = apiGroups.get({id: $routeParams.id}, function () {
         if (self.group !== undefined) {
             self.group.members = self.group.members.map(self.mapUsers);
+
+            self.currentPosition = {
+                lat: self.group.latitude,
+                lng: self.group.longitude,
+                zoom: 12
+            };
         }
     });
+
+
+    self.updateMarkerPosFn = function (position) {
+        self.createdPosition = position;
+    };
 
     self.mapUsers = function (number) {
         return apiUsers.get({id: number}, function () {});
@@ -355,11 +389,26 @@ app.controller('groupPageCtrl', function (apiUsers, apiGroups, apiStores, $route
     };
 
     self.updateInfo = function (data) {
+        if (self.createdPosition !== undefined) {
+            self.group.latitude = self.createdPosition.lat;
+            self.group.longitude = self.createdPosition.lng;
+
+            self.currentPosition = {
+                lat: self.group.latitude,
+                lng: self.group.longitude,
+                zoom: 11
+            };
+        }
         apiGroups.update({id: self.group.id}, self.group);
     };
 
-});
+    self.deleteGroup = function () {
+        apiGroups.delete({id: self.group.id}, self.group);
+        window.location.href = "index.html#";
+    }
 
+}
+);
 app.controller('groupPickerCtrl', function ($rootScope, apiGroups, yPostReq) {
     self = this;
     self.groups = apiGroups.query(function (groups) {
@@ -415,7 +464,7 @@ app.controller('HeaderCtrl', function (yPostReq) {
 });
 
 app.controller('homePageCtrl', function ($rootScope) {
-    location.href = "/groups/" + $rootScope.activeGroup.id;
+    location.href = "#/groups/" + $rootScope.activeGroup.id;
 });
 
 app.controller('PanelDialogCtrl', PanelDialogCtrl);
@@ -485,32 +534,26 @@ app.controller('pickupListCtrl', function (apiPickups, yPostReq, $rootScope) {
 
 app.controller('yMapPickerCtrl', function ($scope) {
     var self = this;
+    self.markers = $scope.markers;
+
+    $scope.$watch('markers', function () {
+        self.markers = $scope.markers;
+    });
 
     $scope.$on('leafletDirectiveMap.click', function (event, args) {
-        var leafEvent = args.leafletEvent;
-        var currentMarkerPosition = {
+        if (!$scope.disabled) {
+
+            var leafEvent = args.leafletEvent;
+            var currentMarkerPosition = {
                 lat: leafEvent.latlng.lat,
                 lng: leafEvent.latlng.lng
             };
-        self.markers = [currentMarkerPosition];
-        $scope.updateFunction({position: currentMarkerPosition});
+            self.markers = [currentMarkerPosition];
+            $scope.updateFunction({position: currentMarkerPosition});
+        }
     });
-    
-    
 
     self.markers = new Array();
-    
-    if ($scope.position !== undefined) {
-        self.currentPosition = JSON.parse($scope.position);
-    } else {
-        angular.extend(self, {
-            currentPosition: {
-                lat: 49.9,
-                lng: 8.660232,
-                zoom: 2
-            }
-        });
-    }
 
     angular.extend(self, {
         events: {
@@ -545,6 +588,11 @@ app.controller('storePageCtrl', function ($rootScope, apiStores, $routeParams, $
             zoom: 12
         }
     });
+    
+    
+    self.updateMarkerPosFn = function (position) {
+        self.createdPosition = position;
+    };
 
     function createMarker() {
         angular.extend(self, {
@@ -561,8 +609,21 @@ app.controller('storePageCtrl', function ($rootScope, apiStores, $routeParams, $
                 }
             }
         });
+    };
+    
+    
+    self.updateInfo = function (data) {
+        if (self.createdPosition !== undefined) {
+            self.store.latitude = self.createdPosition.lat;
+            self.store.longitude = self.createdPosition.lng;
+        }
+        apiStores.update({id: self.store.id}, self.store);
+    };
+
+    self.deleteStore = function () {
+        apiStores.delete({id: self.store.id}, self.store);
+        window.location.href = "index.html#";
     }
-    ;
 });
 
 app.controller('storePickerCtrl', function ($rootScope, yAPI) {
@@ -638,12 +699,12 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
     thisDialog._mdPanelRef = mdPanelRef;
     thisDialog.activeGroup = $rootScope.activeGroup;
     thisDialog.position = {
-        lat: 49.9,
-        lng: 8.660232,
-        zoom: 12
+        lat: thisDialog.activeGroup.latitude,
+        lng: thisDialog.activeGroup.longitude,
+        zoom: 10
     };
-    
-    thisDialog.updateMarkerPosFn = function(position){
+
+    thisDialog.updateMarkerPosFn = function (position) {
         thisDialog.createdPosition = position;
     };
 
@@ -676,6 +737,8 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
     };
 
     thisDialog.createStore = function () {
+        thisDialog.storeData.latitude = thisDialog.createdPosition.lat;
+        thisDialog.storeData.longitude = thisDialog.createdPosition.lng;
         thisDialog.storeData.group = thisDialog.activeGroup.id;
         yPostReq.req('/api/stores/', thisDialog.storeData, thisDialog.refreshPage, thisDialog.closeDialog);
     };

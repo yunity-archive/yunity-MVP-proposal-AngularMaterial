@@ -1,4 +1,4 @@
-<md-content layout-padding>
+<md-content layout-padding class="md-whiteframe-1dp">
     <form editable-form name="editGroupInfoForm" onbeforesave="ctrl.updateInfo($data)">
         <h1 class="md-headline" style="display: inline-block;" editable-text="ctrl.group.name" e-name="name">{{ctrl.group.name}}</h1>
 
@@ -7,10 +7,17 @@
         </md-button>  
         <br/>
         <p style="width: 100%" editable-textarea="ctrl.group.description" e-name="description">{{ctrl.group.description}}</p>
-
+        
+        <p ng-show="editGroupInfoForm.$visible">
+            To edit the groups position, click on the map in the "map" tab.
+        </p>
+        
         <div ng-show="editGroupInfoForm.$visible">
             <md-button type="submit" class="md-raised md-primary" ng-disabled="editGroupInfoForm.$waiting">
                 Save
+            </md-button>
+            <md-button type="button" ng-disabled="editGroupInfoForm.$waiting" ng-click="ctrl.deleteGroup()">
+                Delete Group
             </md-button>
             <md-button type="button" ng-disabled="editGroupInfoForm.$waiting" ng-click="editGroupInfoForm.$cancel()">
                 Cancel
@@ -52,7 +59,9 @@
         </md-tab>
         <md-tab label="map">
             <md-content style="padding-top: 2em;">
-                <leaflet lf-center="currentStore" markers="ctrl.markers" height="480px" width="100%"></leaflet>
+                
+                <y-map-picker position="ctrl.currentPosition" markers="ctrl.markers" disabled="!editGroupInfoForm.$visible"
+                               update-function="ctrl.updateMarkerPosFn(position)" height="480px" width="100%"></y-map-picker>
             </md-content>
         </md-tab>
     </md-tabs>

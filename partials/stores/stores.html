@@ -1,18 +1,42 @@
-<div layout="row" class="md-whiteframe-1dp">
-    <md-content layout-padding flex>
+<md-content layout-padding flex class="md-whiteframe-1dp">
+
+    <form editable-form name="editStoreInfoForm" onbeforesave="ctrl.updateInfo($data)">
         <div style="position: relative; min-height: 20em;">
+            
             <div style="float: right; max-width: 40%; width:25em; overflow: hidden">
-                <leaflet lf-center="ctrl.currentStore" markers="ctrl.markers" height="20em" width="100%"></leaflet>
+                <y-map-picker position="ctrl.currentStore" markers="ctrl.markers" disabled="!editStoreInfoForm.$visible"
+                               update-function="ctrl.updateMarkerPosFn(position)" height="20em" width="100%"></y-map-picker>
             </div>
-            <h1 class="md-headline">{{ctrl.store.name}}</h1>
+            
+            <h1 class="md-headline" style="display: inline-block;" editable-text="ctrl.store.name" e-name="name">{{ctrl.store.name}}</h1>
+            
+            <md-button class="md-icon-button" aria-label="Edit" ng-click="editStoreInfoForm.$show()" ng-hide="editStoreInfoForm.$visible">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+            </md-button>  
+            <br/>
+            <p><i class="fa fa-map-marker" aria-hidden="true"></i> <span editable-text="ctrl.store.address" e-name="address">{{ctrl.store.address}}</span></p>
+            <p style="width: 100%" editable-textarea="ctrl.store.description" e-name="description">{{ctrl.store.description}}</p>
 
-            <span><i class="fa fa-map-marker" aria-hidden="true"></i> {{ctrl.store.address}}</span>
-            <p>{{ctrl.store.description}}</p>
 
+            
         </div>
-        <div style="padding-top: 2em;">
-            <y-pickup-list show-create-button="true" header="Pickups"></y-pickup-list>
-        </div>
-    </md-content>
-</div>
+        
+            <div ng-show="editStoreInfoForm.$visible">
+                <md-button type="submit" class="md-raised md-primary" ng-disabled="editStoreInfoForm.$waiting">
+                    Save
+                </md-button>
+                <md-button type="button" ng-disabled="editStoreInfoForm.$waiting" ng-click="ctrl.deleteStore()">
+                    Delete Store
+                </md-button>
+                <md-button type="button" ng-disabled="editStoreInfoForm.$waiting" ng-click="editStoreInfoForm.$cancel()">
+                    Cancel
+                </md-button>
+            </div>
+    </form>
+
+
+    <div style="padding-top: 2em;">
+        <y-pickup-list show-create-button="true" header="Pickups"></y-pickup-list>
+    </div>
+</md-content>
 

@@ -23,17 +23,7 @@
                 <textarea ng-model="ctrl.storeData.address" rows="5" md-select-on-focus></textarea>
             </md-input-container>
 
-            <md-input-container class="md-block">
-                <label>Latitude</label>
-                <textarea ng-model="ctrl.storeData.latitude" rows="5" md-select-on-focus></textarea>
-            </md-input-container>
-            
-
-            <md-input-container class="md-block">
-                <label>Longitude</label>
-                <textarea ng-model="ctrl.storeData.longitude" rows="5" md-select-on-focus></textarea>
-            </md-input-container>
-            
+            <y-map-picker position="ctrl.position" update-function="ctrl.updateMarkerPosFn(position)" height="20em" width="100%"></y-map-picker>            
 
             <div layout="row" layout-align="end center">
                 <md-button ng-click="ctrl.closeDialog()">Cancel</md-button>
