@@ -8,7 +8,9 @@
                                update-function="ctrl.updateMarkerPosFn(position)" height="20em" width="100%"></y-map-picker>
             </div>
             
-            <h1 class="md-headline" style="display: inline-block;" editable-text="ctrl.store.name" e-name="name">{{ctrl.store.name}}</h1>
+            <h1 class="md-headline" style="display: inline-block;">
+                <span  editable-text="ctrl.store.name" e-name="name">{{ctrl.store.name}}</span>
+            </h1>
             
             <md-button class="md-icon-button" aria-label="Edit" ng-click="editStoreInfoForm.$show()" ng-hide="editStoreInfoForm.$visible">
                 <i class="fa fa-pencil" aria-hidden="true"></i>

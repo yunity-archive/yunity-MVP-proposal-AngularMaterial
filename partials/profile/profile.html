@@ -1,26 +1,60 @@
 <div layout="row" class="md-whiteframe-1dp">
     <md-content layout-padding flex>
-        <h1 class="md-headline">{{ctrl.profile.first_name}} {{ctrl.profile.last_name}}</h1>
-        <md-list style="max-width: 30em">
-        <h3 class="md-title">Communities</h3>
-            <md-list-item>
-                <span class="md-primary">FS Darmstadt</span>
-                <md-button class="small md-secondary" aria-label="Create Pickup" ng-click="joinGroup('createPickup')">
-                    <i style="font-size: 1.2em;" class="fa fa-arrow-right" aria-hidden="true"></i> Join
+        <form editable-form name="editInfoForm" onbeforesave="ctrl.updateInfo($data)">
+
+            <div style="position: relative;  min-height: 20vh;">
+
+                <div style="float: left; padding: 2em; padding-top: .5em;">
+                    <img style="height: 18vh; width: 18vh" src="assets/images/user.png"/>
+                </div>
+
+
+
+                <h1 class="md-headline" style="display: inline-block;">
+                    <span editable-text="ctrl.profile.first_name" e-name="first_name">{{ctrl.profile.first_name}}</span>
+                    <span editable-text="ctrl.profile.last_name" e-name="last_name">{{ctrl.profile.last_name}}</span>                   
+                </h1>
+                <md-button ng-disabled="true" class="md-icon-button" aria-label="Edit" ng-click="editInfoForm.$show()" ng-hide="editInfoForm.$visible">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
                 </md-button>
-            </md-list-item>
-            <md-list-item>
-                <span class="md-primary">FS Mannheim</span>
-                <md-button class="small md-secondary" aria-label="Create Pickup" ng-click="joinGroup('createPickup')">
-                    <i style="font-size: 1.2em;" class="fa fa-arrow-right" aria-hidden="true"></i> Join
-                </md-button>
-            </md-list-item>
-            <md-list-item>
-                <span class="md-primary">FS</span>
-                <md-button class="small md-secondary" aria-label="Create Pickup" ng-click="joinGroup('createPickup')">
-                    <i style="font-size: 1.2em;" class="fa fa-arrow-right" aria-hidden="true"></i> Join
-                </md-button>
-            </md-list-item>
-        </md-list>
+
+                <h2 class="md-title" editable-text="ctrl.profile.display_name" e-name="display_name">{{ctrl.profile.display_name}}</h2>
+
+                <span editable-text="ctrl.profile.password" e-name="password"></span>
+            </div>
+
+
+            <div style="position: relative;">
+
+                <div style="float: right; max-width: 40%; width:25em; overflow: hidden">
+                    <y-map-picker position="ctrl.currentPosition" markers="ctrl.markers" disabled="!editInfoForm.$visible"
+                                  update-function="ctrl.updateMarkerPosFn(position)" height="20em" width="100%"></y-map-picker>
+                </div>
+
+
+                <div ng-show="editInfoForm.$visible">
+                    <md-button type="submit" class="md-raised md-primary" ng-disabled="editInfoForm.$waiting">
+                        Save
+                    </md-button>
+                    <md-button type="button" ng-disabled="editInfoForm.$waiting" ng-click="editInfoForm.$cancel()">
+                        Cancel
+                    </md-button>
+                </div>
+
+                <md-list style="max-width: 30em">
+                    <h3 class="md-title">Communities</h3>
+                    <md-list-item ng-repeat="group in ctrl.groups">
+                        <span class="md-primary">{{group.name}}</span>
+                        <md-button class="small md-secondary" aria-label="Create Pickup" ng-click="joinGroup(group.id)">
+                            <i style="font-size: 1.2em;" class="fa fa-arrow-right" aria-hidden="true"></i> Join
+                        </md-button>
+                    </md-list-item>
+                </md-list>
+            </div>
+        </form>
+
+
+
+
     </md-content>
 </div>

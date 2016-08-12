@@ -1,12 +1,16 @@
 <md-content layout-padding class="md-whiteframe-1dp">
     <form editable-form name="editGroupInfoForm" onbeforesave="ctrl.updateInfo($data)">
-        <h1 class="md-headline" style="display: inline-block;" editable-text="ctrl.group.name" e-name="name">{{ctrl.group.name}}</h1>
+        <h1 class="md-headline" style="display: inline-block;">
+            <span editable-text="ctrl.group.name" e-name="name">{{ctrl.group.name}}</span>
+        </h1>
 
         <md-button class="md-icon-button" aria-label="Edit" ng-click="editGroupInfoForm.$show()" ng-hide="editGroupInfoForm.$visible">
             <i class="fa fa-pencil" aria-hidden="true"></i>
         </md-button>  
         <br/>
-        <p style="width: 100%" editable-textarea="ctrl.group.description" e-name="description">{{ctrl.group.description}}</p>
+        <p style="width: 100%">
+            <span editable-textarea="ctrl.group.description" e-name="description">{{ctrl.group.description}}</span>
+        </p>
         
         <p ng-show="editGroupInfoForm.$visible">
             To edit the groups position, click on the map in the "map" tab.

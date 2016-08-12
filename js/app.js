@@ -20,7 +20,7 @@ app.config(['$routeProvider', function ($routeProvider) {
     }]);
 
 app.config(function ($mdThemingProvider) {
-    var yOrange = $mdThemingProvider.definePalette('yuniyColors', {
+    var yPrimary = $mdThemingProvider.definePalette('yuniyColors', {
         '50': '363636', // yunity black
         '100': 'F5F5F5', // background grey
         '200': '91cb46', // yunity Green
@@ -40,9 +40,15 @@ app.config(function ($mdThemingProvider) {
             '200', '300', '400', '500']
     });
 
+    var yAccent = $mdThemingProvider.extendPalette('yuniyColors', {
+    });
+
+    // Register the new color palette map with the name <code>neonRed</code>
+    $mdThemingProvider.definePalette('yAccent', yAccent);
+
     $mdThemingProvider.theme('default')
             .primaryPalette('yuniyColors')
-            .accentPalette('yuniyColors');
+            .accentPalette('yAccent');
 });
 
 // Set Title for current page
@@ -102,7 +108,11 @@ app.factory("apiPickups", function ($resource) {
 });
 
 app.factory("apiUsers", function ($resource) {
-    return $resource("/api/users/:id/");
+    return $resource("/api/users/:id/", null,
+            {
+                'update': {method: 'PUT'},
+                'delete': {method: 'DELETE'}
+            });
 });
 
 app.factory("apiAuth", function ($resource) {
@@ -226,11 +236,14 @@ app.controller('autocompleteCtrl', function ($rootScope, $q, yAPI) {
     }
 });
 
-app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $rootScope, $mdPanel, $http, $cookies) {
+app.controller('AppCtrl', function ($scope, $mdSidenav, $log, $mdComponentRegistry, $rootScope, $mdPanel, $http, $cookies) {
 
     $http.defaults.headers.common['X-CSRFToken'] = $cookies.get('csrftoken');
 
     $rootScope._mdPanel = $mdPanel;
+    $mdComponentRegistry.when('left').then(function (it) {
+        it.close();
+    });
 
     // Update Login Status
     $rootScope.loggedInUserData = $http.get('/api/auth/status').
@@ -464,6 +477,8 @@ app.controller('HeaderCtrl', function (yPostReq) {
 });
 
 app.controller('homePageCtrl', function ($rootScope) {
+
+    //redirect, since there is nothing to show here yet
     location.href = "#/groups/" + $rootScope.activeGroup.id;
 });
 
@@ -529,9 +544,6 @@ app.controller('pickupListCtrl', function (apiPickups, yPostReq, $rootScope) {
     }
 });
 
-
-
-
 app.controller('yMapPickerCtrl', function ($scope) {
     var self = this;
     self.markers = $scope.markers;
@@ -565,9 +577,30 @@ app.controller('yMapPickerCtrl', function ($scope) {
     });
 });
 
-app.controller('profilePageCtrl', function (apiUsers, $routeParams) {
+app.controller('profilePageCtrl', function (apiUsers, apiGroups, $routeParams) {
     self = this;
     self.profile = apiUsers.get({id: $routeParams.id}, function () {});
+    self.groups = apiGroups.query({members: $routeParams.id}, function () {});
+
+
+    self.updateMarkerPosFn = function (position) {
+        self.createdPosition = position;
+    };
+
+    self.updateInfo = function (data) {
+        console.log(self.profile);
+        if (self.createdPosition !== undefined) {
+            self.profile.latitude = self.createdPosition.lat;
+            self.profile.longitude = self.createdPosition.lng;
+
+            self.currentPosition = {
+                lat: self.profile.latitude,
+                lng: self.profile.longitude,
+                zoom: 11
+            };
+        }
+        apiUsers.update({id: self.profile.id}, self.profile);
+    };
 });
 
 app.controller('storePageCtrl', function ($rootScope, apiStores, $routeParams, $timeout) {
@@ -588,8 +621,8 @@ app.controller('storePageCtrl', function ($rootScope, apiStores, $routeParams, $
             zoom: 12
         }
     });
-    
-    
+
+
     self.updateMarkerPosFn = function (position) {
         self.createdPosition = position;
     };
@@ -609,9 +642,10 @@ app.controller('storePageCtrl', function ($rootScope, apiStores, $routeParams, $
                 }
             }
         });
-    };
-    
-    
+    }
+    ;
+
+
     self.updateInfo = function (data) {
         if (self.createdPosition !== undefined) {
             self.store.latitude = self.createdPosition.lat;
@@ -698,11 +732,13 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
     thisDialog = this;
     thisDialog._mdPanelRef = mdPanelRef;
     thisDialog.activeGroup = $rootScope.activeGroup;
-    thisDialog.position = {
-        lat: thisDialog.activeGroup.latitude,
-        lng: thisDialog.activeGroup.longitude,
-        zoom: 10
-    };
+    if (thisDialog.activeGroup != undefined) {
+        thisDialog.position = {
+            lat: thisDialog.activeGroup.latitude,
+            lng: thisDialog.activeGroup.longitude,
+            zoom: 10
+        };
+    }
 
     thisDialog.updateMarkerPosFn = function (position) {
         thisDialog.createdPosition = position;
