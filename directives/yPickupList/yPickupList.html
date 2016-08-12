@@ -42,7 +42,8 @@
                     <div flex class="pickupList-pickup-left">
                         <span style="margin: 1em 0; padding: .5em;">
                             <span style="margin-right: .5em;" class="md-title">{{pickup.date| date:'HH:mm'}}</span>
-                            <span>{{pickup.date| date:'EEEE, dd.MM.yyyy'}}</span>                        
+                            <span ng-if="showDetail === 'store'"><a href="#/stores/{{pickup.store.id}}">{{pickup.store.name}}</a></span>
+                            <span ng-if="showDetail !== 'store'">{{pickup.date| date:'EEEE, dd.MM.yyyy'}}</span>
                         </span>
                         <div style="padding: .5em">
                             <a class="pickuplist-person" ng-repeat="collectorId in pickup.collector_ids" href="#/profile/{{collectorId}}">

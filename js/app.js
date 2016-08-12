@@ -81,7 +81,9 @@ app.directive("yPickupList", function () {
         scope: {
             showCreateButton: "@",
             header: "@",
-            showStoreDetail: "@"
+            showDetail: "@",
+            groupId: "@",
+            storeId: "@"
         }
     };
 });
@@ -367,7 +369,6 @@ app.controller('groupPageCtrl', function (apiUsers, apiGroups, apiStores, $route
                 message: store.name
             };
         });
-        console.log(self.markers);
     });
 
     self.currentPosition = {
@@ -387,6 +388,7 @@ app.controller('groupPageCtrl', function (apiUsers, apiGroups, apiStores, $route
             };
         }
     });
+    self.group.id = $routeParams.id;
 
 
     self.updateMarkerPosFn = function (position) {
@@ -484,28 +486,40 @@ app.controller('homePageCtrl', function ($rootScope) {
 
 app.controller('PanelDialogCtrl', PanelDialogCtrl);
 
-app.controller('pickupListCtrl', function (apiPickups, yPostReq, $rootScope) {
+app.controller('pickupListCtrl', function (apiStores, apiPickups, $scope, $http, $rootScope) {
     var self = this;
 
     self.updatePickups = function () {
-        var pickups = apiPickups.query(function () {
-            angular.forEach(pickups, function (value, key) {
-                if (value.collector_ids.indexOf($rootScope.loggedInUserData.id) !== -1) {
-                    value.isUserMember = true;
-                } else {
-                    value.isUserMember = false;
-                }
-
-                if (value.collector_ids.length < value.max_collectors) {
-                    value.isFull = false;
-                } else {
-                    value.isFull = true;
-                }
-
-            });
-            self.pickups = pickups;
-        });
+        if ($scope.groupId !== undefined) {
+            apiPickups.query({group: $scope.groupId}, self.addPickuplistInfos);
+        } else if ($scope.storeId !== undefined) {
+            apiPickups.query({store: $scope.storeId}, self.addPickuplistInfos);            
+        } else {
+            apiPickups.query({}, self.addPickuplistInfos);      
+        }
     };
+
+    self.addPickuplistInfos = function(pickups){
+        angular.forEach(pickups, function (value, key) {
+            if (value.collector_ids.indexOf($rootScope.loggedInUserData.id) !== -1) {
+                value.isUserMember = true;
+            } else {
+                value.isUserMember = false;
+            }
+
+            if (value.collector_ids.length < value.max_collectors) {
+                value.isFull = false;
+            } else {
+                value.isFull = true;
+            }
+
+            if ($scope.showDetail === 'store') {
+                value.store = apiStores.get({id: value.store});
+            }
+
+        });
+        self.pickups = pickups;
+    }
 
     self.updatePickups();
 
@@ -514,15 +528,15 @@ app.controller('pickupListCtrl', function (apiPickups, yPostReq, $rootScope) {
     self.pickupList = {
         showJoined: true,
         showOpen: true,
-        showFull: true
+        showFull: false
     };
 
     self.join = function (id) {
-        yPostReq.req('api/pickup-dates/' + id + '/add/', {}, self.updatePickups(), self.updatePickups());
+        $http.post('api/pickup-dates/' + id + '/add/', {}).then(self.updatePickups(), null);
     };
 
     self.leave = function (id) {
-        yPostReq.req('api/pickup-dates/' + id + '/remove/', {}, self.updatePickups(), self.updatePickups());
+        $http.post('api/pickup-dates/' + id + '/remove/', {}).then(self.updatePickups(), null);
     };
 
     self.reversed = false;
@@ -541,7 +555,7 @@ app.controller('pickupListCtrl', function (apiPickups, yPostReq, $rootScope) {
                 return self.pickupList.showOpen;
             }
         }
-    }
+    };
 });
 
 app.controller('yMapPickerCtrl', function ($scope) {
@@ -581,9 +595,9 @@ app.controller('profilePageCtrl', function (apiUsers, apiGroups, $routeParams) {
     self = this;
     self.profile = apiUsers.get({id: $routeParams.id}, function () {
         self.currentPosition = {
-                lat: self.profile.latitude,
-                lng: self.profile.longitude,
-                zoom: 14            
+            lat: self.profile.latitude,
+            lng: self.profile.longitude,
+            zoom: 14
         }
     });
     self.groups = apiGroups.query({members: $routeParams.id}, function () {});
@@ -616,6 +630,7 @@ app.controller('storePageCtrl', function ($rootScope, apiStores, $routeParams, $
             createMarker();
         }
     });
+    self.store.id = $routeParams.id;
 
     $rootScope.currentStoreId = $routeParams.id;
 
@@ -793,4 +808,3 @@ function PanelDialogCtrl(mdPanelRef, $rootScope, yPostReq) {
         location.reload();
     };
 }
-
