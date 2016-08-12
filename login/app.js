@@ -1,48 +1,4 @@
-var app = angular.module('yunityWebApp', ['ngRoute', 'ngMaterial', 'ngResource', 'ngCookies']);
-
-app.controller('AppCtrl', function ($http, $cookies) {
-    
-    $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
-    
-    // Update Login Status
-    $http.get('/api/auth/status').
-            success(function (data) {
-                if (data.display_name != "") {
-                    window.location.href = "../index.html";
-                }
-            });
-});
-
-app.controller('LoginCtrl', function ($http) {
-    var self = this;
-    
-    self.signup = function () {
-        $http.post('/api/users/', self.data).then(self.signupSuccess, self.loginError);
-    };
-    
-    
-    self.login = function () {
-        $http.post('/api/auth/', self.data).then(self.loginSuccess, self.loginError);
-    };
-
-    self.loginSuccess = function () {
-        window.location.href = "../index.html";
-    };
-    
-    
-    self.signupSuccess = function () {
-        window.location.href = "index.html#";
-    };
-    
-    self.loginError = function () {
-        alert("error");
-    };
-
-});
-
-app.factory("apiUsers", function ($resource) {
-    return $resource("/api/groups/:id");
-});
+var app = angular.module('yunityWebApp', ['ngRoute', 'ngMaterial', 'ngResource', 'ngCookies', 'leaflet-directive']);
 
 
 /**
@@ -82,4 +38,109 @@ app.config(function ($mdThemingProvider) {
                 'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
                 'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
             });
+});
+
+/************ Factories ***********/
+
+app.factory("apiUsers", function ($resource) {
+    return $resource("/api/groups/:id");
+});
+
+/************** Controller ***************/
+app.controller('AppCtrl', function ($http, $cookies) {
+    
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.get('csrftoken');
+    
+    // Update Login Status
+    $http.get('/api/auth/status').
+            success(function (data) {
+                if (data.display_name != "") {
+                    window.location.href = "../index.html";
+                }
+            });
+});
+
+app.controller('LoginCtrl', function ($http) {
+    var self = this;
+    
+    self.signup = function () {
+        if (self.createdPosition !== undefined) {
+            self.data.latitude = self.createdPosition.lat;
+            self.data.longitude = self.createdPosition.lng;
+        }
+        $http.post('/api/users/', self.data).then(self.signupSuccess, self.loginError);
+    };
+    
+    
+    self.login = function () {
+        $http.post('/api/auth/', self.data).then(self.loginSuccess, self.loginError);
+    };
+
+    self.loginSuccess = function () {
+        window.location.href = "../index.html";
+    };
+    
+    
+    self.signupSuccess = function () {
+        window.location.href = "index.html#";
+    };
+    
+    self.loginError = function () {
+        alert("error");
+    };
+    
+    
+    self.updateMarkerPosFn = function (position) {
+        self.createdPosition = position;
+    };
+
+});
+
+app.controller('yMapPickerCtrl', function ($scope) {
+    var self = this;
+    self.markers = $scope.markers;
+
+    $scope.$watch('markers', function () {
+        self.markers = $scope.markers;
+    });
+
+    $scope.$on('leafletDirectiveMap.click', function (event, args) {
+        if (!$scope.disabled) {
+
+            var leafEvent = args.leafletEvent;
+            var currentMarkerPosition = {
+                lat: leafEvent.latlng.lat,
+                lng: leafEvent.latlng.lng
+            };
+            self.markers = [currentMarkerPosition];
+            $scope.updateFunction({position: currentMarkerPosition});
+        }
+    });
+
+    self.markers = new Array();
+
+    angular.extend(self, {
+        events: {
+            map: {
+                enable: ['click'],
+                logic: 'emit'
+            }
+        }
+    });
+});
+
+/****************** Directives **********************/
+
+app.directive("yMapPicker", function () {
+    return {
+        templateUrl: '../directives/yMapPicker/yMapPicker.html',
+        scope: {
+            updateFunction: "&",
+            position: "=",
+            height: "@",
+            width: "@",
+            markers: "=",
+            disabled: "="
+        }
+    };
 });

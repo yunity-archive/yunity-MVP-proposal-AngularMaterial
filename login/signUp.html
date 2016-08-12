@@ -52,16 +52,9 @@
             <input ng-model="ctrl.data.address"/>
         </md-input-container>
 
-        <md-input-container class="md-block">
-            <label>Latitude</label>
-            <input ng-model="ctrl.data.latitude"/>
-        </md-input-container>
         
-        <md-input-container class="md-block">
-            <label>Longitude</label>
-            <input ng-model="ctrl.data.longitude"/>
-        </md-input-container>
-
+        <y-map-picker update-function="ctrl.updateMarkerPosFn(position)" height="20em" width="100%"></y-map-picker>
+            
         <md-button class="md-raised md-accent" type="submit">Join</md-button>
     </form>
 

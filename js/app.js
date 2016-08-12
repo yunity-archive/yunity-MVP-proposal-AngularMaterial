@@ -579,7 +579,13 @@ app.controller('yMapPickerCtrl', function ($scope) {
 
 app.controller('profilePageCtrl', function (apiUsers, apiGroups, $routeParams) {
     self = this;
-    self.profile = apiUsers.get({id: $routeParams.id}, function () {});
+    self.profile = apiUsers.get({id: $routeParams.id}, function () {
+        self.currentPosition = {
+                lat: self.profile.latitude,
+                lng: self.profile.longitude,
+                zoom: 14            
+        }
+    });
     self.groups = apiGroups.query({members: $routeParams.id}, function () {});
 
 
@@ -588,7 +594,6 @@ app.controller('profilePageCtrl', function (apiUsers, apiGroups, $routeParams) {
     };
 
     self.updateInfo = function (data) {
-        console.log(self.profile);
         if (self.createdPosition !== undefined) {
             self.profile.latitude = self.createdPosition.lat;
             self.profile.longitude = self.createdPosition.lng;
