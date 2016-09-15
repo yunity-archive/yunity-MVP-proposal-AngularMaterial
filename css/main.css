@@ -73,6 +73,22 @@ input[type="search"]{
     padding: 0 !important;
 }
 
+.spinnerWrapper.ng-hide{
+    background-color: rgba(30, 30, 30, 0.0);
+}
+
+.spinnerWrapper {
+    background-color: rgba(30, 30, 30, 0.3);
+    transition: .5s background-color ease-in-out;
+    position: fixed;
+    top:0;
+    bottom: 0;
+    right: 0;
+    left:0;
+    z-index: 10000;
+}
+
+
 /****************** Chat *********************/
 
 .chat-message

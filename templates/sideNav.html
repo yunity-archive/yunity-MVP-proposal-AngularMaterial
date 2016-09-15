@@ -5,12 +5,7 @@
       </md-button>
     </md-toolbar>
     <md-content>
-            <div ng-include='"templates/communityPicker.html"'></div>
-            <div ng-include='"templates/storePicker.html"'></div>
+            <y-community-picker></y-community-picker>
+            <y-store-picker></y-store-picker>
     </md-content>
-    <md-list>
-        <md-list-item ng-click="closeSideNav()" ng-href="/#/">
-            <p>Neuigkeiten</p>
-        </md-list-item>
-    </md-list>
 </md-sidenav>

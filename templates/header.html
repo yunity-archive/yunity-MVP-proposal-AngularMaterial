@@ -1,4 +1,4 @@
-<md-toolbar class="md-medium-small md-whiteframe-3dp" ng-controller="HeaderCtrl as headerCtrl">
+<md-toolbar class="md-medium-small md-whiteframe-3dp">
     <div class="md-toolbar-tools" layout="row">
         <span flex hide-xs hide-sm></span>
         <span hide show-xs show-sm>     
@@ -8,7 +8,7 @@
         </span>
         <span flex hide show-xs show-sm></span>
         <span flex="noshrink" style="width: 2.5em" hide-xs hide-sm>
-            <a href="#/groups/{{activeGroup.id}}" aria-label="Yunity">
+            <a ui-sref="groups({id: activeGroup.id})" aria-label="Yunity">
                 <img src="assets/icons/Logo-white.png" alt="Yunity" style="width: 2em;">                            
             </a>
         </span>
@@ -53,7 +53,7 @@
                             </div>
                         </md-toolbar>
                         <md-list style="overflow: auto">
-                            <md-list-item ng-href="#/chat/{{user.id}}/" class="md-2-line" ng-repeat="user in ctrl.users| filter:ctrl.searchUser:strict">
+                            <md-list-item  ui-sref="chat({id: user.id})"  class="md-2-line" ng-repeat="user in ctrl.users| filter:ctrl.searchUser:strict">
                                 <img src="assets/images/user.png" class="md-avatar"/>
                                 <div class="md-list-item-text">
                                     <h3>{{user.first_name}} {{user.last_name}}</h3>
@@ -70,14 +70,14 @@
         <span flex hide-xs></span>
         
         <span>
-            <md-button href="#/profile/{{loggedInUserData.id}}" class="md-icon-button" aria-label="User">
+            <md-button ui-sref="profile({id: loggedInUserData.id})" class="md-icon-button" aria-label="User">
                 <i class="fa fa-fw fa-user"></i>
             </md-button>
         </span>
         <span hide-xs>
-            <md-button class="md-icon-button" aria-label="Logout" ng-click="headerCtrl.logout()">
-                <i class="fa fa-fw fa-sign-out"></i>
-            </md-button>            
+            <y-logout-button>
+                <i class="fa fa-fw fa-sign-out"></i>                
+            </y-logout-button>
         </span>
         <span flex hide-xs></span>
     </div>

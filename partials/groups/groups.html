@@ -30,6 +30,7 @@
 
     </form>
 
+    
     <md-tabs md-dynamic-height md-border-bottom flex>
         <md-tab label="pickups">
             <md-content style="padding-top: 2em;">
@@ -55,9 +56,6 @@
             <md-list layout-padding>
                 <md-list-item ng-repeat="store in ctrl.stores" ng-click="ctrl.loadStorePage(store)" class="noright">
                     <p>{{store.name}}</p>
-                    <md-button class="md-secondary md-icon-button" aria-label="Edit" ng-click="openPanel('createStore')">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </md-button>   
                 </md-list-item>
             </md-list>
         </md-tab>

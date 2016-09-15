@@ -1,0 +1,22 @@
+<md-content ng-show="$ctrl.showPanel()" layout-padding style="margin-top: 1.5em; padding: 0em">
+    <md-toolbar layout="row" class="md-hue-1 md-tiny" style="overflow: hidden">
+        <div class="md-toolbar-tools trigger" layout-padding>
+            <span flex ng-click="$ctrl.show = !$ctrl.show">Stores in this Community</span>
+            <a ng-click="$ctrl.openPanel('createStore')">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </a>
+            <span>
+                <i class="fa" ng-click="$ctrl.show = !$ctrl.show" ng-class="{ 'fa-angle-up': $ctrl.show , 'fa-angle-down': !$ctrl.show  }" aria-hidden="true"></i>
+            </span>
+
+        </div>
+    </md-toolbar>
+    <md-list flex style="padding: 8px; overflow: auto; max-height: 20em" class="toggleContent" ng-class="{hideDivbox:!$ctrl.show}">
+        <md-list-item class="md-2-line communityPickerItem" ng-repeat="item in $ctrl.stores()" ng-click="$ctrl.loadStorePage(item)">
+            <i style="font-size: 2em" class="icon md-avatar fa fa-shopping-cart"></i>
+            <div class="md-list-item-text">
+                <h3>{{item.name}}</h3>
+            </div>
+        </md-list-item>
+    </md-list>
+</md-content>

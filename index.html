@@ -1,9 +1,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.0.9/angular-material.min.css">
 
         <link href="assets/images/favicon.png" type="image/png" rel="icon">
 
@@ -11,54 +9,18 @@
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta name="viewport" content="minimal-ui">
         <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
-        <link rel="apple-touch-icon" href="assets/icons/apple-homescreen-icon.png"/>
+        
+        <link rel="apple-touch-icon" href="assets/icons/Logo-orange.png"/>
+        
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        
+        
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/1.0.9/angular-material.min.css">
         <link rel="stylesheet" href="css/main.css">
-        
-        
-        
-        <!-- Leaflet -->
         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css">
-        
         <link rel="stylesheet" href="css/xeditable.css">
-
-
-    </head>
-    <body ng-app="yunityWebApp" ng-controller="AppCtrl">
-
-
-        <div layout="column"  ng-cloak layout-fill="layout-fill">
-            <div ng-include='"templates/sideNav.html"'></div>
-            <!-- Header and mobile sidenav, not affecting content -->
-            <div ng-include='"templates/header.html"' hide-xs></div>
-            
-            <md-content style="min-height: 90%"> 
-
-                <div ng-include='"templates/header.html"' hide show-xs></div>
-
-                <!-- The actuall content of the sides -->
-                <div layout="row" style="margin-top: .4em; min-height: 80%" flex id="mainContent">
-
-                    <div flex></div>
-                    <div flex="nogrow" style="width: 18em; padding: .5em;" hide-xs hide-sm>
-                        <div ng-include='"templates/communityPicker.html"'></div>
-                        <div ng-include='"templates/storePicker.html"'></div>
-                    </div>
-
-                    <div ng-view flex="nogrow" id="mainView"></div>
-                    <div flex></div>
-                    <div flex></div>
-                </div>
-                <div ng-include='"templates/footer.html"'></div>
-            </md-content>
-        </div>
-
-
-        <div>        
-
-        </div>
-
-
+        
+        
         <script src="js/jquery.min.js"></script>
 
         <script src="js/angular/angular.min.js"></script>
@@ -70,6 +32,7 @@
         
         
         <script src="js/xeditable/xeditable.js"></script>
+        <script src="js/angular-ui-router.js"></script>
         
         
         
@@ -84,5 +47,35 @@
         <!--<script type="text/javascript" data-main="js/main" src="js/require.js" charset="UTF8"></script>-->
         <script src="js/app.js"></script>
 
+
+    </head>
+    <body ng-app="yunityWebApp" ng-controller="AppCtrl as appCtrl">
+        
+        <div layout="column"  ng-cloak layout-fill="layout-fill">
+            <div ng-include='"templates/sideNav.html"'></div>
+            <div ng-include='"templates/header.html"' hide-xs></div>
+            
+            <md-content style="min-height: 90%">
+                <div ng-include='"templates/header.html"' hide show-xs></div>
+
+                <div ng-hide="!appCtrl.showSpinner" class="spinnerWrapper">
+                    <md-progress-circular style="position: absolute; top: 50%; left: 50%; margin-top: -100px; margin-left: -100px;" ng-disabled="!appCtrl.showSpinner" class="md-accent" md-diameter="200"></md-progress-circular>
+                </div>
+                
+                <div layout="row" style="margin-top: .4em; min-height: 80%" flex id="mainContent">
+
+                    <div flex></div>
+                    <div flex="nogrow" style="width: 18em; padding: .5em;" hide-xs hide-sm>
+                        <y-community-picker></y-community-picker>
+                        <y-store-picker></y-store-picker>
+                    </div>
+                    
+                    <div ui-view flex="nogrow" id="mainView"></div>
+                    <div flex></div>
+                    <div flex></div>
+                </div>
+                <div ng-include='"templates/footer.html"'></div>
+            </md-content>
+        </div>
     </body>
 </html>

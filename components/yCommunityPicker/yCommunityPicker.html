@@ -1,0 +1,22 @@
+<md-content layout-padding style="padding: 0em">
+    <md-toolbar layout="row" class="md-hue-1 md-tiny">
+        <div class="md-toolbar-tools trigger" layout-padding>
+            <span ng-show="$ctrl.show" flex ng-click="$ctrl.show = !$ctrl.show">Your Communities</span>
+            <span ng-show="!$ctrl.show" flex ng-click="$ctrl.show = !$ctrl.show">{{$ctrl.activeGroup().name}}</span>
+            <a ng-click="$ctrl.openPanel('groupPicker')">
+                <i class="fa fa-plus-circle" aria-hidden="true"></i>
+            </a>
+            <span>
+                <i class="fa trigger" ng-click="$ctrl.show = !$ctrl.show" ng-class="{ 'fa-angle-up': $ctrl.show , 'fa-angle-down': !$ctrl.show  }" aria-hidden="true"></i>                
+            </span>
+        </div>
+    </md-toolbar>
+    <md-list flex style="padding: 8px; overflow: auto; max-height: 20em" class="toggleContent" ng-class="{hideDivbox:!$ctrl.show}">
+        <md-list-item class="md-2-line communityPickerItem" ng-class="{true: 'active', false: ''}[$ctrl.activeGroup().id == {{ item.id}}]" ng-repeat="item in $ctrl.groups| filter:$ctrl.isUserMemberOfGroup" ng-click="$ctrl.setActiveGroup(item)">
+            <i style="font-size: 2em" class="icon md-avatar fa fa-home"></i>
+            <div class="md-list-item-text">
+                <h3>{{ item.name}}</h3>
+            </div>
+        </md-list-item>
+    </md-list>
+</md-content>
